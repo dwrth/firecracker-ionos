@@ -6,9 +6,9 @@ ACTION="${2:?Action required}"
 
 case "$VM" in
     vm1)
-        NS="fc-vm1"
-        HOST_IF="fc1-host"
-        NS_IF="fc1-ns"
+        NS="kn-vm1"
+        HOST_IF="kn1-host"
+        NS_IF="kn1-ns"
 
         HOST_ADDR="10.200.1.1/30"
         HOST_IP="10.200.1.1"
@@ -18,14 +18,14 @@ case "$VM" in
         GUEST_NET="172.16.1.0/30"
         TAP_ADDR="172.16.1.1/30"
 
-        FC_UID=1101
-        FC_GID=1101
+        KN_UID=1101
+        KN_GID=1101
         ;;
 
     vm2)
-        NS="fc-vm2"
-        HOST_IF="fc2-host"
-        NS_IF="fc2-ns"
+        NS="kn-vm2"
+        HOST_IF="kn2-host"
+        NS_IF="kn2-ns"
 
         HOST_ADDR="10.200.2.1/30"
         HOST_IP="10.200.2.1"
@@ -35,8 +35,8 @@ case "$VM" in
         GUEST_NET="172.16.2.0/30"
         TAP_ADDR="172.16.2.1/30"
 
-        FC_UID=1102
-        FC_GID=1102
+        KN_UID=1102
+        KN_GID=1102
         ;;
 
     *)
@@ -74,7 +74,7 @@ start() {
 
     # TAP presented to Firecracker.
     ip netns exec "$NS" \
-        ip tuntap add dev tap0 mode tap user "$FC_UID" group "$FC_GID"
+        ip tuntap add dev tap0 mode tap user "$KN_UID" group "$KN_GID"
 
     ip netns exec "$NS" ip addr add "$TAP_ADDR" dev tap0
     ip netns exec "$NS" ip link set tap0 up

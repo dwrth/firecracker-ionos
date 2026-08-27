@@ -132,10 +132,10 @@ ensure_account() {
 }
 
 install_accounts() {
-    echo "==> Creating Firecracker identities"
+    echo "==> Creating knaller identities"
 
-    ensure_account fc-vm1 "$VM1_UID" "$VM1_GID"
-    ensure_account fc-vm2 "$VM2_UID" "$VM2_GID"
+    ensure_account kn-vm1 "$VM1_UID" "$VM1_GID"
+    ensure_account kn-vm2 "$VM2_UID" "$VM2_GID"
 }
 
 install_binaries() {
@@ -163,12 +163,12 @@ install_host_helpers() {
     echo "==> Installing host helpers"
 
     for SCRIPT in \
-        firecracker-kvm-setup \
-        firecracker-host-network \
-        firecracker-vm-network \
-        firecracker-prepare \
-        firecracker-start \
-        firecracker-stop
+        knaller-kvm-setup \
+        knaller-host-network \
+        knaller-vm-network \
+        knaller-prepare \
+        knaller-start \
+        knaller-stop
     do
         install \
             -o root \
@@ -186,19 +186,19 @@ install_host_configuration() {
         -o root \
         -g root \
         -m 0644 \
-        "$REPO/host/modules-load/firecracker-kvm.conf" \
-        /etc/modules-load.d/firecracker-kvm.conf
+        "$REPO/host/modules-load/knaller-kvm.conf" \
+        /etc/modules-load.d/knaller-kvm.conf
 
     install \
         -o root \
         -g root \
         -m 0644 \
-        "$REPO/host/sysctl/99-firecracker.conf" \
-        /etc/sysctl.d/99-firecracker.conf
+        "$REPO/host/sysctl/99-knaller.conf" \
+        /etc/sysctl.d/99-knaller.conf
 
     sysctl --system >/dev/null
 
-    /usr/local/sbin/firecracker-kvm-setup
+    /usr/local/sbin/knaller-kvm-setup
 
     [[ -c /dev/kvm ]] ||
         die "/dev/kvm is unavailable"
@@ -211,7 +211,7 @@ install_vm() {
     IMAGE="$4"
     CONFIG="$5"
 
-    DEST="/var/lib/firecracker/$VM"
+    DEST="/var/lib/knaller/$VM"
 
     echo "==> Installing $VM"
 
@@ -253,7 +253,7 @@ install_vm_artifacts() {
         -o root \
         -g root \
         -m 0755 \
-        /var/lib/firecracker
+        /var/lib/knaller
 
     install -d \
         -o root \
@@ -267,12 +267,12 @@ install_vm_artifacts() {
         -m 0755 \
         /srv/jailer/firecracker
 
-    # firecracker-prepare uses hard links.
-    VAR_DEV="$(stat -c %d /var/lib/firecracker)"
+    # knaller-prepare uses hard links.
+    VAR_DEV="$(stat -c %d /var/lib/knaller)"
     JAIL_DEV="$(stat -c %d /srv/jailer/firecracker)"
 
     [[ "$VAR_DEV" == "$JAIL_DEV" ]] ||
-        die "/var/lib/firecracker and /srv/jailer must be on the same filesystem"
+        die "/var/lib/knaller and /srv/jailer must be on the same filesystem"
 
     install_vm \
         vm1 \
@@ -296,34 +296,46 @@ install_systemd() {
         -o root \
         -g root \
         -m 0644 \
-        "$REPO/host/systemd/firecracker-host-network.service" \
-        /etc/systemd/system/firecracker-host-network.service
+        "$REPO/host/systemd/knaller-host-network.service" \
+        /etc/systemd/system/knaller-host-network.service
 
     install \
         -o root \
         -g root \
         -m 0644 \
-        "$REPO/host/systemd/firecracker-network@.service" \
-        '/etc/systemd/system/firecracker-network@.service'
+        "$REPO/host/systemd/knaller-network@.service" \
+        '/etc/systemd/system/knaller-network@.service'
 
     install \
         -o root \
         -g root \
         -m 0644 \
-        "$REPO/host/systemd/firecracker@.service" \
-        '/etc/systemd/system/firecracker@.service'
+        "$REPO/host/systemd/knaller@.service" \
+        '/etc/systemd/system/knaller@.service'
 
-    # Remove the obsolete pre-template network unit if present.
+    # Remove obsolete pre-rebrand / pre-template units if present.
     systemctl disable firecracker-network.service \
+        >/dev/null 2>&1 || true
+    systemctl disable firecracker-host-network.service \
+        >/dev/null 2>&1 || true
+    systemctl disable firecracker@vm1.service \
+        >/dev/null 2>&1 || true
+    systemctl disable firecracker@vm2.service \
         >/dev/null 2>&1 || true
 
     rm -f /etc/systemd/system/firecracker-network.service
+    rm -f /etc/systemd/system/firecracker-host-network.service
+    rm -f '/etc/systemd/system/firecracker-network@.service'
+    rm -f '/etc/systemd/system/firecracker@.service'
+    rm -f /usr/local/sbin/firecracker-{kvm-setup,host-network,vm-network,prepare,start,stop}
+    rm -f /etc/modules-load.d/firecracker-kvm.conf
+    rm -f /etc/sysctl.d/99-firecracker.conf
 
     systemctl daemon-reload
 
-    systemctl enable firecracker-host-network.service
-    systemctl enable firecracker@vm1.service
-    systemctl enable firecracker@vm2.service
+    systemctl enable knaller-host-network.service
+    systemctl enable knaller@vm1.service
+    systemctl enable knaller@vm2.service
 }
 
 validate_installation() {
@@ -332,28 +344,28 @@ validate_installation() {
     test -x /usr/local/bin/firecracker
     test -x /usr/local/bin/jailer
 
-    test -x /usr/local/sbin/firecracker-host-network
-    test -x /usr/local/sbin/firecracker-vm-network
-    test -x /usr/local/sbin/firecracker-prepare
-    test -x /usr/local/sbin/firecracker-start
-    test -x /usr/local/sbin/firecracker-stop
+    test -x /usr/local/sbin/knaller-host-network
+    test -x /usr/local/sbin/knaller-vm-network
+    test -x /usr/local/sbin/knaller-prepare
+    test -x /usr/local/sbin/knaller-start
+    test -x /usr/local/sbin/knaller-stop
 
     test -c /dev/kvm
 
-    test -f /var/lib/firecracker/vm1/vmlinux
-    test -f /var/lib/firecracker/vm1/rootfs.ext4
-    test -f /var/lib/firecracker/vm1/config.json
+    test -f /var/lib/knaller/vm1/vmlinux
+    test -f /var/lib/knaller/vm1/rootfs.ext4
+    test -f /var/lib/knaller/vm1/config.json
 
-    test -f /var/lib/firecracker/vm2/vmlinux
-    test -f /var/lib/firecracker/vm2/rootfs.ext4
-    test -f /var/lib/firecracker/vm2/config.json
+    test -f /var/lib/knaller/vm2/vmlinux
+    test -f /var/lib/knaller/vm2/rootfs.ext4
+    test -f /var/lib/knaller/vm2/config.json
 
-    jq empty /var/lib/firecracker/vm1/config.json
-    jq empty /var/lib/firecracker/vm2/config.json
+    jq empty /var/lib/knaller/vm1/config.json
+    jq empty /var/lib/knaller/vm2/config.json
 
-    systemctl is-enabled firecracker-host-network.service
-    systemctl is-enabled firecracker@vm1.service
-    systemctl is-enabled firecracker@vm2.service
+    systemctl is-enabled knaller-host-network.service
+    systemctl is-enabled knaller@vm1.service
+    systemctl is-enabled knaller@vm2.service
 
     echo "==> Installation validation passed"
 }
@@ -372,13 +384,13 @@ main() {
     echo
     echo "Host installation complete."
     echo
-    echo "The Firecracker VMs have been installed and enabled,"
+    echo "The knaller VMs have been installed and enabled,"
     echo "but this installer intentionally does not start them."
     echo
     echo "To test:"
-    echo "  systemctl start firecracker-host-network.service"
-    echo "  systemctl start firecracker@vm1.service"
-    echo "  systemctl start firecracker@vm2.service"
+    echo "  systemctl start knaller-host-network.service"
+    echo "  systemctl start knaller@vm1.service"
+    echo "  systemctl start knaller@vm2.service"
 }
 
 main "$@"

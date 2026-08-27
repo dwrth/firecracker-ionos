@@ -9,46 +9,46 @@ if [[ -z "$UPLINK" ]]; then
 fi
 
 start() {
-    echo "Configuring Firecracker host networking via $UPLINK"
+    echo "Configuring knaller host networking via $UPLINK"
 
     sysctl -q -w net.ipv4.ip_forward=1
 
     # Only touch tables owned by us.
-    nft delete table inet firecracker_filter 2>/dev/null || true
-    nft delete table ip firecracker_nat 2>/dev/null || true
+    nft delete table inet knaller_filter 2>/dev/null || true
+    nft delete table ip knaller_nat 2>/dev/null || true
 
-    nft add table inet firecracker_filter
-    nft 'add chain inet firecracker_filter forward { type filter hook forward priority filter; policy accept; }'
+    nft add table inet knaller_filter
+    nft 'add chain inet knaller_filter forward { type filter hook forward priority filter; policy accept; }'
 
-    nft add rule inet firecracker_filter forward \
+    nft add rule inet knaller_filter forward \
         ip saddr 172.16.1.0/30 \
         ip daddr 169.254.169.254 \
         counter drop
 
-    nft add rule inet firecracker_filter forward \
+    nft add rule inet knaller_filter forward \
         ip saddr 172.16.2.0/30 \
         ip daddr 169.254.169.254 \
         counter drop
 
-    nft add table ip firecracker_nat
-    nft 'add chain ip firecracker_nat postrouting { type nat hook postrouting priority srcnat; policy accept; }'
+    nft add table ip knaller_nat
+    nft 'add chain ip knaller_nat postrouting { type nat hook postrouting priority srcnat; policy accept; }'
 
-    nft add rule ip firecracker_nat postrouting \
+    nft add rule ip knaller_nat postrouting \
         oifname "$UPLINK" \
         ip saddr 172.16.1.0/30 \
         counter masquerade
 
-    nft add rule ip firecracker_nat postrouting \
+    nft add rule ip knaller_nat postrouting \
         oifname "$UPLINK" \
         ip saddr 172.16.2.0/30 \
         counter masquerade
 
-    echo "Firecracker host networking ready"
+    echo "Knaller host networking ready"
 }
 
 stop() {
-    nft delete table inet firecracker_filter 2>/dev/null || true
-    nft delete table ip firecracker_nat 2>/dev/null || true
+    nft delete table inet knaller_filter 2>/dev/null || true
+    nft delete table ip knaller_nat 2>/dev/null || true
 
     # Deliberately don't force ip_forward back to 0.
 }
@@ -61,10 +61,10 @@ status() {
     sysctl net.ipv4.ip_forward
 
     echo
-    nft list table inet firecracker_filter 2>/dev/null || true
+    nft list table inet knaller_filter 2>/dev/null || true
 
     echo
-    nft list table ip firecracker_nat 2>/dev/null || true
+    nft list table ip knaller_nat 2>/dev/null || true
 }
 
 case "${1:-}" in

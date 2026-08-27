@@ -10,8 +10,8 @@ fi
 
 reset_guest() {
     VM="$1"
-    ROOTFS="/var/lib/firecracker/$VM/rootfs.ext4"
-    MNT="/mnt/firecracker-seal-$VM"
+    ROOTFS="/var/lib/knaller/$VM/rootfs.ext4"
+    MNT="/mnt/knaller-seal-$VM"
 
     echo "==> Sealing $VM"
 
@@ -42,16 +42,16 @@ reset_guest() {
     echo "    $VM sealed"
 }
 
-echo "==> Stopping Firecracker guests"
+echo "==> Stopping knaller guests"
 
-systemctl stop firecracker@vm1.service || true
-systemctl stop firecracker@vm2.service || true
+systemctl stop knaller@vm1.service || true
+systemctl stop knaller@vm2.service || true
 
-echo "==> Stopping Firecracker networking"
+echo "==> Stopping knaller networking"
 
-systemctl stop firecracker-network@vm1.service || true
-systemctl stop firecracker-network@vm2.service || true
-systemctl stop firecracker-host-network.service || true
+systemctl stop knaller-network@vm1.service || true
+systemctl stop knaller-network@vm2.service || true
+systemctl stop knaller-host-network.service || true
 
 echo "==> Removing disposable jails"
 
@@ -64,15 +64,15 @@ reset_guest vm2
 
 echo "==> Ensuring services remain enabled for clone boot"
 
-systemctl enable firecracker-host-network.service
-systemctl enable firecracker@vm1.service
-systemctl enable firecracker@vm2.service
+systemctl enable knaller-host-network.service
+systemctl enable knaller@vm1.service
+systemctl enable knaller@vm2.service
 
 echo "==> Preparing SSH host identity regeneration"
 
 mkdir -p /etc/cloud/cloud.cfg.d
 
-cat >/etc/cloud/cloud.cfg.d/90-firecracker-golden-image.cfg <<'CLOUD'
+cat >/etc/cloud/cloud.cfg.d/90-knaller-golden-image.cfg <<'CLOUD'
 ssh_deletekeys: true
 ssh_genkeytypes:
   - rsa

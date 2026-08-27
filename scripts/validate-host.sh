@@ -17,7 +17,7 @@ check() {
     fi
 }
 
-echo "=== FIRECRACKER HOST VALIDATION ==="
+echo "=== KNALLER HOST VALIDATION ==="
 echo
 
 check \
@@ -34,39 +34,39 @@ check \
 
 check \
     "VM1 rootfs installed" \
-    test -f /var/lib/firecracker/vm1/rootfs.ext4
+    test -f /var/lib/knaller/vm1/rootfs.ext4
 
 check \
     "VM2 rootfs installed" \
-    test -f /var/lib/firecracker/vm2/rootfs.ext4
+    test -f /var/lib/knaller/vm2/rootfs.ext4
 
 check \
     "VM1 kernel installed" \
-    test -f /var/lib/firecracker/vm1/vmlinux
+    test -f /var/lib/knaller/vm1/vmlinux
 
 check \
     "VM2 kernel installed" \
-    test -f /var/lib/firecracker/vm2/vmlinux
+    test -f /var/lib/knaller/vm2/vmlinux
 
 check \
     "VM1 config valid" \
-    jq empty /var/lib/firecracker/vm1/config.json
+    jq empty /var/lib/knaller/vm1/config.json
 
 check \
     "VM2 config valid" \
-    jq empty /var/lib/firecracker/vm2/config.json
+    jq empty /var/lib/knaller/vm2/config.json
 
 check \
     "Host network enabled" \
-    systemctl is-enabled firecracker-host-network.service
+    systemctl is-enabled knaller-host-network.service
 
 check \
     "VM1 enabled" \
-    systemctl is-enabled firecracker@vm1.service
+    systemctl is-enabled knaller@vm1.service
 
 check \
     "VM2 enabled" \
-    systemctl is-enabled firecracker@vm2.service
+    systemctl is-enabled knaller@vm2.service
 
 echo
 
@@ -77,12 +77,12 @@ EXPECTED_KERNEL="$(
 )"
 
 VM1_KERNEL="$(
-    sha256sum /var/lib/firecracker/vm1/vmlinux |
+    sha256sum /var/lib/knaller/vm1/vmlinux |
     awk '{print $1}'
 )"
 
 VM2_KERNEL="$(
-    sha256sum /var/lib/firecracker/vm2/vmlinux |
+    sha256sum /var/lib/knaller/vm2/vmlinux |
     awk '{print $1}'
 )"
 

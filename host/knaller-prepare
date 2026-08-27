@@ -18,7 +18,8 @@ case "$VM" in
         ;;
 esac
 
-SOURCE="/var/lib/firecracker/$VM"
+SOURCE="/var/lib/knaller/$VM"
+# Jailer places chroots under <chroot-base>/<exec-file-basename>/<id>.
 JAIL_BASE="/srv/jailer/firecracker/$VM"
 ROOT="$JAIL_BASE/root"
 

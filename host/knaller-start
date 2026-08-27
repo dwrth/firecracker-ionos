@@ -7,12 +7,12 @@ case "$VM" in
     vm1)
         UID_NUM=1101
         GID_NUM=1101
-        NETNS="fc-vm1"
+        NETNS="kn-vm1"
         ;;
     vm2)
         UID_NUM=1102
         GID_NUM=1102
-        NETNS="fc-vm2"
+        NETNS="kn-vm2"
         ;;
     *)
         echo "Unknown VM: $VM" >&2

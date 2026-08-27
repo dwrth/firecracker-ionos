@@ -1,0 +1,32 @@
+[Unit]
+Description=Knaller microVM %i
+
+Requires=knaller-host-network.service
+Requires=knaller-network@%i.service
+
+After=systemd-modules-load.service
+After=knaller-host-network.service
+After=knaller-network@%i.service
+
+[Service]
+Type=simple
+
+ExecStartPre=/usr/local/sbin/knaller-kvm-setup
+
+ExecStartPre=/usr/local/sbin/knaller-prepare %i
+ExecStart=/usr/local/sbin/knaller-start %i
+ExecStop=/usr/local/sbin/knaller-stop %i
+
+Restart=on-failure
+RestartSec=2
+
+TimeoutStartSec=30
+TimeoutStopSec=15
+
+KillMode=control-group
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

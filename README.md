@@ -1,7 +1,8 @@
-# Firecracker on IONOS Cloud Cubes
+# Knaller
 
 Reproducible host configuration for running two jailed Firecracker
-microVMs on an IONOS Cloud Cube.
+microVMs on an IONOS Cloud Cube. Knaller is the German word for
+"firecracker".
 
 ## Layout
 
@@ -15,14 +16,15 @@ microVMs on an IONOS Cloud Cube.
 
 VM1:
 - UID/GID: 1101
-- network namespace: fc-vm1
+- network namespace: kn-vm1
 - guest address: 172.16.1.2/30
 - gateway: 172.16.1.1
 
 VM2:
 - UID/GID: 1102
-- network namespace: fc-vm2
+- network namespace: kn-vm2
 - guest address: 172.16.2.2/30
 - gateway: 172.16.2.1
 
-Both VMs are started through Firecracker jailer and systemd.
+Both VMs are started through Firecracker jailer and systemd units
+named `knaller@…`.

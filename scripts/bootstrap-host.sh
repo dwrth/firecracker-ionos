@@ -44,7 +44,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y \
 
 echo "==> Checking nested virtualization"
 
-"$REPO/host/firecracker-kvm-setup"
+"$REPO/host/knaller-kvm-setup"
 
 [[ -c /dev/kvm ]] ||
     die "/dev/kvm is unavailable"
@@ -67,7 +67,7 @@ echo "==> Building fresh guest root filesystems"
 "$REPO/scripts/build-guests.sh"
 
 echo
-echo "==> Installing Firecracker host"
+echo "==> Installing knaller host"
 
 "$REPO/scripts/install-host.sh"
 

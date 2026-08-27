@@ -1,4 +1,4 @@
-# Firecracker artifacts used by this build
+# Upstream Firecracker artifacts used by knaller
 
 firecracker 2fd0171309af7e24cf8dafc8a6f921c1434c49b5f9349bb996b7ed0a4deb8aa7
 jailer 1f3a0c1fe86212d0001819bfe0819071c01208b3ccc9398c3b3bc1b84cf21edd

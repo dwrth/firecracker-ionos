@@ -1,0 +1,13 @@
+[Unit]
+Description=Knaller host networking
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/knaller-host-network start
+ExecStop=/usr/local/sbin/knaller-host-network stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
