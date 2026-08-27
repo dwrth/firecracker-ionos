@@ -1,0 +1,22 @@
+# Generated guest disks
+*.ext4
+*.img
+*.raw
+*.qcow
+*.qcow2
+*.squashfs
+
+# Downloaded binaries/kernels
+artifacts/firecracker
+artifacts/jailer
+artifacts/vmlinux
+
+# Build directories
+build/
+dist/
+tmp/
+
+# Local/editor files
+*.swp
+*~
+.DS_Store

@@ -1,0 +1,33 @@
+[Unit]
+Description=Firecracker microVM %i
+
+Requires=firecracker-host-network.service
+Requires=firecracker-network@%i.service
+
+After=systemd-modules-load.service
+After=firecracker-host-network.service
+After=firecracker-network@%i.service
+
+[Service]
+Type=simple
+
+ExecStartPre=/usr/sbin/modprobe kvm_amd
+ExecStartPre=/usr/bin/test -c /dev/kvm
+
+ExecStartPre=/usr/local/sbin/firecracker-prepare %i
+ExecStart=/usr/local/sbin/firecracker-start %i
+ExecStop=/usr/local/sbin/firecracker-stop %i
+
+Restart=on-failure
+RestartSec=2
+
+TimeoutStartSec=30
+TimeoutStopSec=15
+
+KillMode=control-group
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

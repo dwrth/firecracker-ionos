@@ -1,0 +1,5 @@
+# Firecracker artifacts used by this build
+
+firecracker 2fd0171309af7e24cf8dafc8a6f921c1434c49b5f9349bb996b7ed0a4deb8aa7
+jailer 1f3a0c1fe86212d0001819bfe0819071c01208b3ccc9398c3b3bc1b84cf21edd
+vmlinux 435466ec838656f59e464ce941e7fe9f3697d5da6a73c5e5dad60dae5ad93ceb

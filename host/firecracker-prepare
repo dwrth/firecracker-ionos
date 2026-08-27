@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VM="${1:?VM name required}"
+
+case "$VM" in
+    vm1)
+        UID_NUM=1101
+        GID_NUM=1101
+        ;;
+    vm2)
+        UID_NUM=1102
+        GID_NUM=1102
+        ;;
+    *)
+        echo "Unknown VM: $VM" >&2
+        exit 1
+        ;;
+esac
+
+SOURCE="/var/lib/firecracker/$VM"
+JAIL_BASE="/srv/jailer/firecracker/$VM"
+ROOT="$JAIL_BASE/root"
+
+for file in vmlinux rootfs.ext4 config.json; do
+    if [[ ! -f "$SOURCE/$file" ]]; then
+        echo "Missing $SOURCE/$file" >&2
+        exit 1
+    fi
+done
+
+rm -rf "$JAIL_BASE"
+
+install -d -o root -g root -m 0755 \
+    /srv/jailer/firecracker
+
+install -d -o root -g root -m 0755 \
+    "$JAIL_BASE"
+
+install -d -o root -g root -m 0755 \
+    "$ROOT"
+
+ln "$SOURCE/vmlinux" "$ROOT/vmlinux"
+ln "$SOURCE/rootfs.ext4" "$ROOT/rootfs.ext4"
+ln "$SOURCE/config.json" "$ROOT/config.json"
+
+echo "Prepared jail for $VM as ${UID_NUM}:${GID_NUM}"

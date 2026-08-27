@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VM="${1:?VM name required}"
+
+ROOT="/srv/jailer/firecracker/$VM/root"
+SOCKET="$ROOT/run/firecracker.socket"
+PIDFILE="$ROOT/firecracker.pid"
+
+if [[ ! -S "$SOCKET" ]]; then
+    echo "No API socket for $VM"
+    exit 0
+fi
+
+PID=""
+
+if [[ -f "$PIDFILE" ]]; then
+    PID="$(cat "$PIDFILE" || true)"
+fi
+
+echo "Requesting graceful shutdown of $VM"
+
+curl \
+    --silent \
+    --show-error \
+    --fail \
+    --noproxy '*' \
+    --unix-socket "$SOCKET" \
+    -X PUT \
+    -H 'Content-Type: application/json' \
+    -d '{"action_type":"SendCtrlAltDel"}' \
+    http://localhost/actions \
+    >/dev/null || true
+
+# Give the guest time to shut down cleanly.
+if [[ -n "$PID" ]]; then
+    for _ in $(seq 1 100); do
+        if ! kill -0 "$PID" 2>/dev/null; then
+            echo "$VM stopped"
+            exit 0
+        fi
+
+        sleep 0.1
+    done
+fi
+
+echo "$VM did not exit after graceful shutdown request"
+exit 0

@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+UPLINK="$(ip route show default | awk '/default/ {print $5; exit}')"
+
+if [[ -z "$UPLINK" ]]; then
+    echo "Unable to determine uplink" >&2
+    exit 1
+fi
+
+start() {
+    echo "Configuring Firecracker host networking via $UPLINK"
+
+    sysctl -q -w net.ipv4.ip_forward=1
+
+    # Only touch tables owned by us.
+    nft delete table inet firecracker_filter 2>/dev/null || true
+    nft delete table ip firecracker_nat 2>/dev/null || true
+
+    nft add table inet firecracker_filter
+    nft 'add chain inet firecracker_filter forward { type filter hook forward priority filter; policy accept; }'
+
+    nft add rule inet firecracker_filter forward \
+        ip saddr 172.16.1.0/30 \
+        ip daddr 169.254.169.254 \
+        counter drop
+
+    nft add rule inet firecracker_filter forward \
+        ip saddr 172.16.2.0/30 \
+        ip daddr 169.254.169.254 \
+        counter drop
+
+    nft add table ip firecracker_nat
+    nft 'add chain ip firecracker_nat postrouting { type nat hook postrouting priority srcnat; policy accept; }'
+
+    nft add rule ip firecracker_nat postrouting \
+        oifname "$UPLINK" \
+        ip saddr 172.16.1.0/30 \
+        counter masquerade
+
+    nft add rule ip firecracker_nat postrouting \
+        oifname "$UPLINK" \
+        ip saddr 172.16.2.0/30 \
+        counter masquerade
+
+    echo "Firecracker host networking ready"
+}
+
+stop() {
+    nft delete table inet firecracker_filter 2>/dev/null || true
+    nft delete table ip firecracker_nat 2>/dev/null || true
+
+    # Deliberately don't force ip_forward back to 0.
+}
+
+status() {
+    echo "=== UPLINK ==="
+    echo "$UPLINK"
+
+    echo
+    sysctl net.ipv4.ip_forward
+
+    echo
+    nft list table inet firecracker_filter 2>/dev/null || true
+
+    echo
+    nft list table ip firecracker_nat 2>/dev/null || true
+}
+
+case "${1:-}" in
+    start) start ;;
+    stop) stop ;;
+    restart)
+        stop
+        start
+        ;;
+    status) status ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}" >&2
+        exit 2
+        ;;
+esac
