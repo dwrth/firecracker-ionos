@@ -29,7 +29,7 @@ echo "==> Bootstrapping Ubuntu ${UBUNTU_RELEASE}"
 debootstrap \
     --arch=amd64 \
     --variant=minbase \
-    --include=systemd-sysv,iproute2,iputils-ping,ca-certificates,curl,procps \
+    --include=systemd-sysv,udev,iproute2,iputils-ping,ca-certificates,curl,procps \
     "$UBUNTU_RELEASE" \
     "$BASE" \
     "$UBUNTU_MIRROR"
@@ -83,6 +83,11 @@ nameserver 1.1.1.1
 nameserver 8.8.8.8
 options timeout:2 attempts:2
 RESOLV
+
+if [[ ! -x "$BASE/usr/lib/systemd/systemd-udevd" ]]; then
+    echo "systemd-udevd is missing from guest image" >&2
+    exit 1
+fi
 
 # Networking will be handled by systemd-networkd.
 systemctl --root="$BASE" enable systemd-networkd.service
