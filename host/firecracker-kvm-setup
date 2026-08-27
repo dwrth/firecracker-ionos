@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+modprobe kvm
+
+if grep -qw vmx /proc/cpuinfo; then
+    VENDOR_MODULE="kvm_intel"
+elif grep -qw svm /proc/cpuinfo; then
+    VENDOR_MODULE="kvm_amd"
+else
+    echo "ERROR: CPU virtualization extensions (vmx/svm) are unavailable" >&2
+    exit 1
+fi
+
+modprobe "$VENDOR_MODULE"
+
+if [[ ! -c /dev/kvm ]]; then
+    echo "ERROR: /dev/kvm was not created" >&2
+    exit 1
+fi
+
+echo "KVM ready using $VENDOR_MODULE"

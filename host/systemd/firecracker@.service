@@ -11,8 +11,7 @@ After=firecracker-network@%i.service
 [Service]
 Type=simple
 
-ExecStartPre=/usr/sbin/modprobe kvm_amd
-ExecStartPre=/usr/bin/test -c /dev/kvm
+ExecStartPre=/usr/local/sbin/firecracker-kvm-setup
 
 ExecStartPre=/usr/local/sbin/firecracker-prepare %i
 ExecStart=/usr/local/sbin/firecracker-start %i

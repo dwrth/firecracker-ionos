@@ -44,7 +44,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y \
 
 echo "==> Checking nested virtualization"
 
-modprobe kvm_amd
+"$REPO/host/firecracker-kvm-setup"
 
 [[ -c /dev/kvm ]] ||
     die "/dev/kvm is unavailable"

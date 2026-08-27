@@ -163,6 +163,7 @@ install_host_helpers() {
     echo "==> Installing host helpers"
 
     for SCRIPT in \
+        firecracker-kvm-setup \
         firecracker-host-network \
         firecracker-vm-network \
         firecracker-prepare \
@@ -196,10 +197,11 @@ install_host_configuration() {
         /etc/sysctl.d/99-firecracker.conf
 
     sysctl --system >/dev/null
-    modprobe kvm_amd
+
+    /usr/local/sbin/firecracker-kvm-setup
 
     [[ -c /dev/kvm ]] ||
-        die "/dev/kvm is unavailable after loading kvm_amd"
+        die "/dev/kvm is unavailable"
 }
 
 install_vm() {
