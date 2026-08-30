@@ -53,7 +53,7 @@ func Collect(cfg *config.Config) (Capacity, error) {
 	capacity := Capacity{
 		HostCPUs:           hostCPUs(),
 		HostMemoryMiB:      memtotal,
-		ReservedMemoryMiB:  int64(cfg.Scheduler.HostMemoryReserveMib),
+		ReservedMemoryMiB:  int64(cfg.Scheduler.HostMemoryReserveMiB),
 		CPUOvercommitRatio: cfg.Scheduler.CPUOvercommitRatio,
 		AllocatedVCPUs:     allocatedVCPUs,
 		AllocatedMemoryMiB: allocatedMemoryMiB,

@@ -27,11 +27,11 @@ func TestConfig_Validate(t *testing.T) {
 			Kernel:     kernel,
 		},
 		Scheduler: config.Scheduler{
-			HostMemoryReserveMib: 256,
+			HostMemoryReserveMiB: 256,
 			CPUOvercommitRatio:   2.0,
-			MinimumVMMemoryMib:   128,
-			MaximumVMMemoryMib:   512,
-			MaximumVMVcpus:       4,
+			MinimumVMMemoryMiB:   128,
+			MaximumVMMemoryMiB:   512,
+			MaximumVMVCPUs:       4,
 		},
 		Network: config.Network{
 			GuestCidr:   "10.0.0.0/24",
@@ -110,7 +110,7 @@ func TestConfig_Validate(t *testing.T) {
 			wantErr: true,
 			config: func() config.Config {
 				cfg := validCfg
-				cfg.Scheduler.HostMemoryReserveMib = 0
+				cfg.Scheduler.HostMemoryReserveMiB = 0
 				return cfg
 			}(),
 		},
@@ -119,7 +119,7 @@ func TestConfig_Validate(t *testing.T) {
 			wantErr: true,
 			config: func() config.Config {
 				cfg := validCfg
-				cfg.Scheduler.MinimumVMMemoryMib = 0
+				cfg.Scheduler.MinimumVMMemoryMiB = 0
 				return cfg
 			}(),
 		},
@@ -128,7 +128,7 @@ func TestConfig_Validate(t *testing.T) {
 			wantErr: true,
 			config: func() config.Config {
 				cfg := validCfg
-				cfg.Scheduler.MaximumVMMemoryMib = 0
+				cfg.Scheduler.MaximumVMMemoryMiB = 0
 				return cfg
 			}(),
 		},
@@ -137,8 +137,8 @@ func TestConfig_Validate(t *testing.T) {
 			wantErr: true,
 			config: func() config.Config {
 				cfg := validCfg
-				cfg.Scheduler.MaximumVMMemoryMib = 64
-				cfg.Scheduler.MinimumVMMemoryMib = 128
+				cfg.Scheduler.MaximumVMMemoryMiB = 64
+				cfg.Scheduler.MinimumVMMemoryMiB = 128
 				return cfg
 			}(),
 		},

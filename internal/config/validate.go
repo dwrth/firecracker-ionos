@@ -27,19 +27,19 @@ func (c *Config) Validate() error {
 	if c.Scheduler.CPUOvercommitRatio <= 0 {
 		return errors.New("config: scheduler.cpu_overcommit_ratio must be greater than 0")
 	}
-	if c.Scheduler.HostMemoryReserveMib <= 0 {
+	if c.Scheduler.HostMemoryReserveMiB <= 0 {
 		return errors.New("config: scheduler.host_memory_reserve_mib must be greater than 0")
 	}
-	if c.Scheduler.MinimumVMMemoryMib <= 0 {
+	if c.Scheduler.MinimumVMMemoryMiB <= 0 {
 		return errors.New("config: scheduler.minimum_vm_memory_mib must be greater than 0")
 	}
-	if c.Scheduler.MaximumVMMemoryMib <= 0 {
+	if c.Scheduler.MaximumVMMemoryMiB <= 0 {
 		return errors.New("config: scheduler.maximum_vm_memory_mib must be greater than 0")
 	}
-	if c.Scheduler.MaximumVMMemoryMib < c.Scheduler.MinimumVMMemoryMib {
+	if c.Scheduler.MaximumVMMemoryMiB < c.Scheduler.MinimumVMMemoryMiB {
 		return errors.New("config: scheduler.maximum_vm_memory_mib must be greater than or equal to scheduler.minimum_vm_memory_mib")
 	}
-	if c.Scheduler.MaximumVMVcpus <= 0 {
+	if c.Scheduler.MaximumVMVCPUs <= 0 {
 		return errors.New("config: scheduler.maximum_vm_vcpus must be greater than 0")
 	}
 

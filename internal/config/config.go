@@ -22,11 +22,11 @@ type Storage struct {
 }
 
 type Scheduler struct {
-	HostMemoryReserveMib int     `yaml:"host_memory_reserve_mib"`
+	HostMemoryReserveMiB int     `yaml:"host_memory_reserve_mib"`
 	CPUOvercommitRatio   float64 `yaml:"cpu_overcommit_ratio"`
-	MinimumVMMemoryMib   int     `yaml:"minimum_vm_memory_mib"`
-	MaximumVMMemoryMib   int     `yaml:"maximum_vm_memory_mib"`
-	MaximumVMVcpus       int     `yaml:"maximum_vm_vcpus"`
+	MinimumVMMemoryMiB   int     `yaml:"minimum_vm_memory_mib"`
+	MaximumVMMemoryMiB   int     `yaml:"maximum_vm_memory_mib"`
+	MaximumVMVCPUs       int     `yaml:"maximum_vm_vcpus"`
 }
 
 type Network struct {

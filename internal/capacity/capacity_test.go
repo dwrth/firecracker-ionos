@@ -8,7 +8,7 @@ import (
 
 func TestCapacity_AvailableMemoryMiB(t *testing.T) {
 	tests := []struct {
-		name string // description of this test case
+		name string
 		want int64
 		c    Capacity
 	}{
