@@ -1,7 +1,7 @@
 package state_test
 
 import (
-	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -34,7 +34,7 @@ func TestStore_Exists(t *testing.T) {
 	}
 }
 
-func TestStore_Save(t *testing.T) {
+func TestStore_Load(t *testing.T) {
 	dir := t.TempDir()
 	s := state.New(dir)
 
@@ -43,16 +43,16 @@ func TestStore_Save(t *testing.T) {
 		t.Fatalf("Save() failed: %v", err)
 	}
 
-	data, err := os.ReadFile(filepath.Join(dir, "vm-0001.json"))
+	got, err := s.Load("vm-0001")
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Load() failed: %v", err)
+	}
+	if got != vm {
+		t.Fatalf("Load() returned incorrect VM: got %+v, want %+v", got, vm)
 	}
 
-	var got state.VM
-	if err := json.Unmarshal(data, &got); err != nil {
-		t.Fatalf("invalid JSON: %v", err)
-	}
-	if got.ID != vm.ID || got.Name != vm.Name || got.Status != vm.Status {
-		t.Fatalf("Save() returned incorrect VM: got %+v, want %+v", got, vm)
+	_, err = s.Load("vm-9999")
+	if !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("Load() returned incorrect error: got %v, want %v", err, os.ErrNotExist)
 	}
 }

@@ -62,3 +62,17 @@ func (s *Store) Save(vm VM) error {
 
 	return os.Rename(tmpName, s.path(vm.ID))
 }
+
+func (s *Store) Load(id string) (VM, error) {
+	data, err := os.ReadFile(s.path(id))
+	if err != nil {
+		return VM{}, err
+	}
+
+	var vm VM
+	if err := json.Unmarshal(data, &vm); err != nil {
+		return VM{}, err
+	}
+
+	return vm, nil
+}
