@@ -29,3 +29,18 @@ func TestNextID(t *testing.T) {
 		})
 	}
 }
+
+func TestCreds(t *testing.T) {
+	uid, gid, err := allocate.Creds("vm-0004", 12000, 12000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if uid != 12004 || gid != 12004 {
+		t.Errorf("Creds() = %d, %d, want 12004, 12004", uid, gid)
+	}
+
+	_, _, err = allocate.Creds("bad-vm-id", 12000, 12000)
+	if err == nil {
+		t.Fatal("expected error for invalid id")
+	}
+}
