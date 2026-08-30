@@ -4,6 +4,15 @@ Reproducible host configuration for running two jailed Firecracker
 microVMs on an IONOS Cloud Cube. Knaller is the German word for
 "firecracker".
 
+## Roadmap
+
+- **Dynamic VM manager (Go CLI)** — in progress on
+  [`dynamic-vm-manager`](https://github.com/dwrth/knaller/tree/dynamic-vm-manager) (https://github.com/dwrth/knaller/pull/1).
+
+  Replaces the hard-coded `vm1`/`vm2` setup with a capacity-aware CLI
+  (`create`, `list`, `inspect`, `start`, `stop`, `delete`) while keeping
+  Firecracker, jailer, systemd and the existing networking model.
+
 ## Layout
 
 - `host/` - host networking, jailer helpers and systemd configuration
