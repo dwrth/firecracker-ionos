@@ -1,6 +1,10 @@
 package capacity
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/dwrth/knaller/internal/state"
+)
 
 func TestCapacity_AvailableMemoryMiB(t *testing.T) {
 	tests := []struct {
@@ -102,5 +106,15 @@ func TestCapacity_AvailableVCPUs(t *testing.T) {
 				t.Errorf("AvailableVCPUs() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestCapacity_sumAllocated(t *testing.T) {
+	vcpus, mem := sumAllocated([]state.VM{
+		{VCPUs: 2, MemoryMiB: 1024},
+		{VCPUs: 1, MemoryMiB: 512},
+	})
+	if vcpus != 3 || mem != 1536 {
+		t.Errorf("sumAllocated() = %d, %d, want 3, 1536", vcpus, mem)
 	}
 }

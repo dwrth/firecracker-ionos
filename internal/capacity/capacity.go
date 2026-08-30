@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/dwrth/knaller/internal/config"
+	"github.com/dwrth/knaller/internal/state"
 )
 
 type Capacity struct {
@@ -42,13 +43,20 @@ func Collect(cfg *config.Config) (Capacity, error) {
 		return Capacity{}, fmt.Errorf("capacity: failed to parse meminfo: %v", err)
 	}
 
+	vms, err := state.New(cfg.State.Directory).List()
+	if err != nil {
+		return Capacity{}, fmt.Errorf("capacity: failed to list VMs: %w", err)
+	}
+
+	allocatedVCPUs, allocatedMemoryMiB := sumAllocated(vms)
+
 	capacity := Capacity{
 		HostCPUs:           hostCPUs(),
 		HostMemoryMiB:      memtotal,
 		ReservedMemoryMiB:  int64(cfg.Scheduler.HostMemoryReserveMib),
 		CPUOvercommitRatio: cfg.Scheduler.CPUOvercommitRatio,
-		AllocatedVCPUs:     0,
-		AllocatedMemoryMiB: 0,
+		AllocatedVCPUs:     allocatedVCPUs,
+		AllocatedMemoryMiB: allocatedMemoryMiB,
 	}
 
 	return capacity, nil
@@ -67,4 +75,12 @@ func Print(w io.Writer, capacity Capacity) {
 	fmt.Fprintf(w, " Available vCPUs      : %d\n", capacity.AvailableVCPUs())
 	fmt.Fprintf(w, " Available memory     : %d MiB\n", capacity.AvailableMemoryMiB())
 	fmt.Fprintf(w, "=============================\n")
+}
+
+func sumAllocated(vms []state.VM) (vcpus int, memoryMiB int64) {
+	for _, vm := range vms {
+		vcpus += vm.VCPUs
+		memoryMiB += int64(vm.MemoryMiB)
+	}
+	return vcpus, memoryMiB
 }
