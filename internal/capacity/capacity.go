@@ -55,13 +55,16 @@ func Collect(cfg *config.Config) (Capacity, error) {
 }
 
 func Print(w io.Writer, capacity Capacity) {
-	fmt.Fprintf(w, "Host CPUs:              %d\n", capacity.HostCPUs)
-	fmt.Fprintf(w, "Host memory:            %d MiB\n", capacity.HostMemoryMiB)
-	fmt.Fprintf(w, "Reserved host memory:   %d MiB\n", capacity.ReservedMemoryMiB)
-	fmt.Fprintf(w, "CPU overcommit ratio:   %.2f\n", capacity.CPUOvercommitRatio)
-	fmt.Fprintf(w, "Allocated vCPUs:        %d\n", capacity.AllocatedVCPUs)
-	fmt.Fprintf(w, "Allocated memory:       %d MiB\n", capacity.AllocatedMemoryMiB)
-	fmt.Fprintf(w, "Maximum vCPUs:          %d\n", capacity.MaximumAllocatedVCPUs())
-	fmt.Fprintf(w, "Available vCPUs:        %d\n", capacity.AvailableVCPUs())
-	fmt.Fprintf(w, "Available memory:       %d MiB\n", capacity.AvailableMemoryMiB())
+	fmt.Fprintf(w, "===== Host Capacity =====\n")
+	fmt.Fprintf(w, " Host CPUs            : %d\n", capacity.HostCPUs)
+	fmt.Fprintf(w, " Host memory          : %d MiB\n", capacity.HostMemoryMiB)
+	fmt.Fprintf(w, " Reserved memory      : %d MiB\n", capacity.ReservedMemoryMiB)
+	fmt.Fprintf(w, " CPU overcommit ratio : %.2f\n", capacity.CPUOvercommitRatio)
+	fmt.Fprintf(w, "-----------------------------\n")
+	fmt.Fprintf(w, " Allocated vCPUs      : %d\n", capacity.AllocatedVCPUs)
+	fmt.Fprintf(w, " Allocated memory     : %d MiB\n", capacity.AllocatedMemoryMiB)
+	fmt.Fprintf(w, " Maximum vCPUs        : %d\n", capacity.MaximumAllocatedVCPUs())
+	fmt.Fprintf(w, " Available vCPUs      : %d\n", capacity.AvailableVCPUs())
+	fmt.Fprintf(w, " Available memory     : %d MiB\n", capacity.AvailableMemoryMiB())
+	fmt.Fprintf(w, "=============================\n")
 }
