@@ -15,10 +15,12 @@ type Request struct {
 }
 
 var (
-	ErrInvalidVCPUs   = errors.New("scheduler: vcpus must be at least 1")
-	ErrTooManyVCPUs   = errors.New("scheduler: vcpus exceed maximum_vm_vcpus")
-	ErrMemoryTooSmall = errors.New("scheduler: memory below minimum_vm_memory_mib")
-	ErrMemoryTooLarge = errors.New("scheduler: memory above maximum_vm_memory_mib")
+	ErrInvalidVCPUs       = errors.New("scheduler: vcpus must be at least 1")
+	ErrTooManyVCPUs       = errors.New("scheduler: vcpus exceed maximum_vm_vcpus")
+	ErrMemoryTooSmall     = errors.New("scheduler: memory below minimum_vm_memory_mib")
+	ErrMemoryTooLarge     = errors.New("scheduler: memory above maximum_vm_memory_mib")
+	ErrInsufficientMemory = errors.New("scheduler: insufficient memory")
+	ErrInsufficientVCPUs  = errors.New("scheduler: insufficient vcpus")
 )
 
 func Admit(cfg *config.Config, cap capacity.Capacity, req Request) error {
@@ -34,7 +36,11 @@ func Admit(cfg *config.Config, cap capacity.Capacity, req Request) error {
 	if req.MemoryMiB > cfg.Scheduler.MaximumVMMemoryMiB {
 		return fmt.Errorf("%w: requested %d, max %d", ErrMemoryTooLarge, req.MemoryMiB, cfg.Scheduler.MaximumVMMemoryMiB)
 	}
-
-	_ = cap
+	if int64(req.MemoryMiB) > cap.AvailableMemoryMiB() {
+		return fmt.Errorf("%w: requested %d MiB, available %d MiB", ErrInsufficientMemory, req.MemoryMiB, cap.AvailableMemoryMiB())
+	}
+	if req.VCPUs > cap.AvailableVCPUs() {
+		return fmt.Errorf("%w: requested %d, available %d", ErrInsufficientVCPUs, req.VCPUs, cap.AvailableVCPUs())
+	}
 	return nil
 }
