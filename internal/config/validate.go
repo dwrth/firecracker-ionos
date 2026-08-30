@@ -39,8 +39,9 @@ func (c *Config) Validate() error {
 	if c.Scheduler.MaximumVMMemoryMib < c.Scheduler.MinimumVMMemoryMib {
 		return errors.New("config: scheduler.maximum_vm_memory_mib must be greater than or equal to scheduler.minimum_vm_memory_mib")
 	}
-
-	// unsure about the maximum_vm_vcpus
+	if c.Scheduler.MaximumVMVcpus <= 0 {
+		return errors.New("config: scheduler.maximum_vm_vcpus must be greater than 0")
+	}
 
 	if _, err := netip.ParsePrefix(c.Network.GuestCidr); err != nil {
 		return errors.New("config: network.guest_cidr is invalid")
