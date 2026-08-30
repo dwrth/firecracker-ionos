@@ -56,3 +56,65 @@ func TestStore_Load(t *testing.T) {
 		t.Fatalf("Load() returned incorrect error: got %v, want %v", err, os.ErrNotExist)
 	}
 }
+
+func TestStore_Create(t *testing.T) {
+	dir := t.TempDir()
+	s := state.New(dir)
+	vm := state.VM{ID: "vm-0001", Name: "worker-1", Status: state.StatusStopped}
+
+	if err := s.Create(vm); err != nil {
+		t.Fatalf("Create() failed: %v", err)
+	}
+	if err := s.Create(vm); !errors.Is(err, state.ErrAlreadyExists) {
+		t.Fatalf("Create() returned incorrect error: got %v, want %v", err, state.ErrAlreadyExists)
+	}
+}
+
+func TestStore_List(t *testing.T) {
+	dir := t.TempDir()
+	s := state.New(dir)
+
+	vms, err := s.List()
+	if err != nil {
+		t.Fatalf("List() failed: %v", err)
+	}
+	if len(vms) != 0 {
+		t.Fatalf("List() returned incorrect number of VMs: got %d, want 0", len(vms))
+	}
+
+	if err := s.Create(state.VM{ID: "vm-0002", Name: "b"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Create(state.VM{ID: "vm-0001", Name: "a"}); err != nil {
+		t.Fatal(err)
+	}
+
+	vms, err = s.List()
+	if err != nil {
+		t.Fatalf("List() failed: %v", err)
+	}
+	if len(vms) != 2 || vms[0].ID != "vm-0001" || vms[1].ID != "vm-0002" {
+		t.Fatalf("List() returned incorrect VMs: got %+v, want [ID:vm-0001, Name:a, ID:vm-0002, Name:b]", vms)
+	}
+}
+
+func TestStore_Delete(t *testing.T) {
+	dir := t.TempDir()
+	s := state.New(dir)
+	if err := s.Create(state.VM{ID: "vm-0001"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Delete("vm-0001"); err != nil {
+		t.Fatalf("Delete() failed: %v", err)
+	}
+	exists, err := s.Exists("vm-0001")
+	if err != nil {
+		t.Fatalf("Exists() failed: %v", err)
+	}
+	if exists {
+		t.Fatalf("Exists() returned true for deleted VM")
+	}
+	if err := s.Delete("vm-0001"); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("Delete() returned incorrect error: got %v, want %v", err, os.ErrNotExist)
+	}
+}
