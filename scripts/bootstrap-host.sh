@@ -4,12 +4,12 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 die() {
-    echo "ERROR: $*" >&2
-    exit 1
+	echo "ERROR: $*" >&2
+	exit 1
 }
 
 if [[ "$(id -u)" -ne 0 ]]; then
-    die "Run this script as root"
+	die "Run this script as root"
 fi
 
 echo "==> Checking operating system"
@@ -18,11 +18,11 @@ echo "==> Checking operating system"
 source /etc/os-release
 
 [[ "$ID" == "ubuntu" ]] ||
-    die "Expected Ubuntu, found: $ID"
+	die "Expected Ubuntu, found: $ID"
 
 if [[ "$VERSION_ID" != "26.04" ]]; then
-    echo "WARNING: This build was validated on Ubuntu 26.04."
-    echo "Current version: $VERSION_ID"
+	echo "WARNING: This build was validated on Ubuntu 26.04."
+	echo "Current version: $VERSION_ID"
 fi
 
 echo "==> Installing bootstrap/build dependencies"
@@ -30,24 +30,24 @@ echo "==> Installing bootstrap/build dependencies"
 apt-get update
 
 DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    ca-certificates \
-    curl \
-    debootstrap \
-    e2fsprogs \
-    jq \
-    iproute2 \
-    nftables \
-    util-linux \
-    kmod \
-    xz-utils \
-    tar
+	ca-certificates \
+	curl \
+	debootstrap \
+	e2fsprogs \
+	jq \
+	iproute2 \
+	nftables \
+	util-linux \
+	kmod \
+	xz-utils \
+	tar
 
 echo "==> Checking nested virtualization"
 
 "$REPO/host/knaller-kvm-setup"
 
 [[ -c /dev/kvm ]] ||
-    die "/dev/kvm is unavailable"
+	die "/dev/kvm is unavailable"
 
 echo "==> /dev/kvm is available"
 

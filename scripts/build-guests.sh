@@ -4,35 +4,33 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD="$REPO/build"
 BASE="$BUILD/rootfs-base"
-STAGING="$BUILD/staging"
 OUTPUT="$BUILD/guests"
 
 UBUNTU_RELEASE="noble"
 UBUNTU_MIRROR="http://archive.ubuntu.com/ubuntu"
 
 if [[ "$(uname -m)" != "x86_64" ]]; then
-    echo "This build currently expects x86_64" >&2
-    exit 1
+	echo "This build currently expects x86_64" >&2
+	exit 1
 fi
 
 echo "==> Cleaning previous build"
 
-rm -rf "$BASE" "$STAGING" "$OUTPUT"
+rm -rf "$BASE" "$OUTPUT"
 
 mkdir -p \
-    "$BASE" \
-    "$STAGING" \
-    "$OUTPUT"
+	"$BASE" \
+	"$OUTPUT"
 
 echo "==> Bootstrapping Ubuntu ${UBUNTU_RELEASE}"
 
 debootstrap \
-    --arch=amd64 \
-    --variant=minbase \
-    --include=systemd-sysv,udev,iproute2,iputils-ping,ca-certificates,curl,procps \
-    "$UBUNTU_RELEASE" \
-    "$BASE" \
-    "$UBUNTU_MIRROR"
+	--arch=amd64 \
+	--variant=minbase \
+	--include=systemd-sysv,udev,iproute2,iputils-ping,ca-certificates,curl,procps \
+	"$UBUNTU_RELEASE" \
+	"$BASE" \
+	"$UBUNTU_MIRROR"
 
 echo "==> Configuring Ubuntu repositories"
 
@@ -53,12 +51,12 @@ RESOLV
 echo "==> Updating guest packages"
 
 chroot "$BASE" /usr/bin/env \
-    DEBIAN_FRONTEND=noninteractive \
-    apt-get update
+	DEBIAN_FRONTEND=noninteractive \
+	apt-get update
 
 chroot "$BASE" /usr/bin/env \
-    DEBIAN_FRONTEND=noninteractive \
-    apt-get -y dist-upgrade
+	DEBIAN_FRONTEND=noninteractive \
+	apt-get -y dist-upgrade
 
 echo "==> Configuring common guest settings"
 
@@ -85,8 +83,8 @@ options timeout:2 attempts:2
 RESOLV
 
 if [[ ! -x "$BASE/usr/lib/systemd/systemd-udevd" ]]; then
-    echo "systemd-udevd is missing from guest image" >&2
-    exit 1
+	echo "systemd-udevd is missing from guest image" >&2
+	exit 1
 fi
 
 # Networking will be handled by systemd-networkd.
@@ -101,11 +99,11 @@ chroot "$BASE" passwd -l root >/dev/null
 echo "==> Recording installed package versions"
 
 dpkg-query \
-    --admindir="$BASE/var/lib/dpkg" \
-    -W \
-    -f='${Package}\t${Version}\n' \
-    | sort \
-    >"$REPO/artifacts/guest-packages.tsv"
+	--admindir="$BASE/var/lib/dpkg" \
+	-W \
+	-f='${Package}\t${Version}\n' |
+	sort \
+		>"$REPO/artifacts/guest-packages.tsv"
 
 echo "==> Cleaning base image"
 
@@ -118,86 +116,40 @@ rm -rf "$BASE/var/tmp/"*
 rm -rf "$BASE/var/log/"*
 
 mkdir -p \
-    "$BASE/var/log" \
-    "$BASE/tmp" \
-    "$BASE/var/tmp"
+	"$BASE/var/log" \
+	"$BASE/tmp" \
+	"$BASE/var/tmp"
 
 chmod 1777 \
-    "$BASE/tmp" \
-    "$BASE/var/tmp"
+	"$BASE/tmp" \
+	"$BASE/var/tmp"
 
-build_vm() {
-    VM="$1"
-    IP="$2"
-    GATEWAY="$3"
+echo "==> Creating base rootfs image"
 
-    ROOT="$STAGING/$VM"
-    IMAGE="$OUTPUT/$VM.ext4"
+IMAGE="$OUTPUT/base-rootfs.ext4"
 
-    echo "==> Building $VM ($IP)"
+truncate -s 1G "$IMAGE"
 
-    mkdir -p "$ROOT"
+mkfs.ext4 \
+	-q \
+	-F \
+	-L knaller-base \
+	-d "$BASE" \
+	"$IMAGE"
 
-    cp -a "$BASE/." "$ROOT/"
+e2fsck -fn "$IMAGE" >/dev/null
 
-    echo "$VM" >"$ROOT/etc/hostname"
+echo "    created $IMAGE"
 
-    cat >"$ROOT/etc/hosts" <<EOF_HOSTS
-127.0.0.1 localhost
-127.0.1.1 $VM
-
-::1 localhost ip6-localhost ip6-loopback
-EOF_HOSTS
-
-    cat >"$ROOT/etc/systemd/network/10-eth0.network" <<EOF_NETWORK
-[Match]
-Name=eth0
-
-[Network]
-Address=$IP
-Gateway=$GATEWAY
-IPv6AcceptRA=no
-LinkLocalAddressing=no
-EOF_NETWORK
-
-    # Ensure a new identity is generated on first boot.
-    : >"$ROOT/etc/machine-id"
-
-    truncate -s 1G "$IMAGE"
-
-    mkfs.ext4 \
-        -q \
-        -F \
-        -L "$VM" \
-        -d "$ROOT" \
-        "$IMAGE"
-
-    e2fsck -fn "$IMAGE" >/dev/null
-
-    echo "    created $IMAGE"
-}
-
-build_vm \
-    vm1 \
-    172.16.1.2/30 \
-    172.16.1.1
-
-build_vm \
-    vm2 \
-    172.16.2.2/30 \
-    172.16.2.1
-
-echo "==> Recording image hashes"
+echo "==> Recording image hash"
 
 (
-    cd "$OUTPUT"
-    sha256sum vm1.ext4 vm2.ext4
+	cd "$OUTPUT"
+	sha256sum base-rootfs.ext4
 ) >"$REPO/artifacts/guest-images.sha256"
-
 echo
 echo "Build complete:"
 ls -lh "$OUTPUT"
-
 echo
 echo "SHA256:"
 cat "$REPO/artifacts/guest-images.sha256"
