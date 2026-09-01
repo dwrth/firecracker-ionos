@@ -1,4 +1,4 @@
-// Package storage will manage storage.
+// Package storage provisions per-VM disks and kernels
 package storage
 
 import (
