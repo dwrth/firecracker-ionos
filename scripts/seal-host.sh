@@ -4,42 +4,42 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 if [[ "$(id -u)" -ne 0 ]]; then
-    echo "ERROR: run as root" >&2
-    exit 1
+	echo "ERROR: run as root" >&2
+	exit 1
 fi
 
 reset_guest() {
-    VM="$1"
-    ROOTFS="/var/lib/knaller/$VM/rootfs.ext4"
-    MNT="/mnt/knaller-seal-$VM"
+	VM="$1"
+	ROOTFS="/var/lib/knaller/$VM/rootfs.ext4"
+	MNT="/mnt/knaller-seal-$VM"
 
-    echo "==> Sealing $VM"
+	echo "==> Sealing $VM"
 
-    mkdir -p "$MNT"
+	mkdir -p "$MNT"
 
-    mount -o loop "$ROOTFS" "$MNT"
+	mount -o loop "$ROOTFS" "$MNT"
 
-    # Generate a unique systemd machine-id on the next guest boot.
-    rm -f "$MNT/etc/machine-id"
-    : >"$MNT/etc/machine-id"
+	# Generate a unique systemd machine-id on the next guest boot.
+	rm -f "$MNT/etc/machine-id"
+	: >"$MNT/etc/machine-id"
 
-    # dbus should refer to the system machine-id.
-    rm -f "$MNT/var/lib/dbus/machine-id"
-    mkdir -p "$MNT/var/lib/dbus"
-    ln -s /etc/machine-id "$MNT/var/lib/dbus/machine-id"
+	# dbus should refer to the system machine-id.
+	rm -f "$MNT/var/lib/dbus/machine-id"
+	mkdir -p "$MNT/var/lib/dbus"
+	ln -s /etc/machine-id "$MNT/var/lib/dbus/machine-id"
 
-    # Never clone an already-used systemd random seed.
-    rm -f "$MNT/var/lib/systemd/random-seed"
+	# Never clone an already-used systemd random seed.
+	rm -f "$MNT/var/lib/systemd/random-seed"
 
-    # Remove runtime logs from the template guest.
-    rm -rf "$MNT/var/log/"*
-    mkdir -p "$MNT/var/log"
+	# Remove runtime logs from the template guest.
+	rm -rf "$MNT/var/log/"*
+	mkdir -p "$MNT/var/log"
 
-    sync
-    umount "$MNT"
-    rmdir "$MNT"
+	sync
+	umount "$MNT"
+	rmdir "$MNT"
 
-    echo "    $VM sealed"
+	echo "    $VM sealed"
 }
 
 echo "==> Stopping knaller guests"
@@ -56,8 +56,8 @@ systemctl stop knaller-host-network.service || true
 echo "==> Removing disposable jails"
 
 rm -rf \
-    /srv/jailer/firecracker/vm1 \
-    /srv/jailer/firecracker/vm2
+	/srv/jailer/firecracker/vm1 \
+	/srv/jailer/firecracker/vm2
 
 reset_guest vm1
 reset_guest vm2
@@ -83,10 +83,10 @@ CLOUD
 echo "==> Cleaning host cloud-init identity"
 
 if command -v cloud-init >/dev/null 2>&1; then
-    cloud-init clean --logs --machine-id
+	cloud-init clean --logs --machine-id
 else
-    echo "ERROR: cloud-init is not installed" >&2
-    exit 1
+	echo "ERROR: cloud-init is not installed" >&2
+	exit 1
 fi
 
 echo "==> Removing host random seed"

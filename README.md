@@ -37,3 +37,26 @@ VM2:
 
 Both VMs are started through Firecracker jailer and systemd units
 named `knaller@…`.
+
+## Roadmap
+
+- [x] v1.0.0 static two-VM baseline
+- [x] Go CLI skeleton
+- [x] Config loading
+- [x] Capacity reporting
+- [x] VM state model
+- [x] Scheduler / admission
+- [x] Resource allocation
+- [x] Base-rootfs workflow
+- [ ] Firecracker config
+- [ ] Jailer scripts
+- [ ] Networking / NAT
+- [ ] create
+- [ ] list / inspect
+- [ ] start / stop
+- [ ] delete
+- [ ] Named sizes
+- [ ] Auto sizing
+- [ ] CPU controls
+- [ ] doctor / reconcile
+- [ ] Golden image / clean-room test

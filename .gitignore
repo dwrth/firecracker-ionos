@@ -23,3 +23,7 @@ tmp/
 
 # Local planning notes
 PLAN.md
+
+# Go
+/bin/
+*.exe
