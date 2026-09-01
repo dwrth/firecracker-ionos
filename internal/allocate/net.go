@@ -5,16 +5,19 @@ import (
 	"net/netip"
 )
 
+// Net holds a carved /30 subnet and host and peer addresses.
 type Net struct {
 	Subnet string
 	HostIP string
 	PeerIP string
 }
 
+// GuestNet carves a /30 guest subnet from guestCIDR for id.
 func GuestNet(id, guestCIDR string) (Net, error) {
 	return subnetFor(id, guestCIDR)
 }
 
+// TransitNet carves a /30 transit subnet from transitCIDR for id.
 func TransitNet(id, transitCIDR string) (Net, error) {
 	return subnetFor(id, transitCIDR)
 }

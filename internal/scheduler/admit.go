@@ -9,6 +9,7 @@ import (
 	"github.com/dwrth/knaller/internal/config"
 )
 
+// Request describes resources requested for a new VM.
 type Request struct {
 	VCPUs     int
 	MemoryMiB int
@@ -23,6 +24,7 @@ var (
 	ErrInsufficientVCPUs  = errors.New("scheduler: insufficient vcpus")
 )
 
+// Admit checks whether req fits configured limits and available capacity.
 func Admit(cfg *config.Config, cap capacity.Capacity, req Request) error {
 	if req.VCPUs < 1 {
 		return ErrInvalidVCPUs

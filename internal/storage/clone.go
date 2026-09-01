@@ -6,6 +6,7 @@ import (
 	"os/exec"
 )
 
+// CloneBaseRootfs copies the base rootfs into the VM directory for id.
 func (m *Manager) CloneBaseRootfs(id string) error {
 	src := m.BaseRootfs()
 	dst := m.Rootfs(id)

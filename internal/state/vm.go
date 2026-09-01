@@ -1,6 +1,7 @@
 // Package state will manage the state of the system.
 package state
 
+// Status is the runtime state of a VM.
 type Status string
 
 const (
@@ -8,6 +9,7 @@ const (
 	StatusRunning Status = "running"
 )
 
+// VM describes a microVM and its allocated resources.
 type VM struct {
 	ID            string `json:"id"`
 	Name          string `json:"name"`

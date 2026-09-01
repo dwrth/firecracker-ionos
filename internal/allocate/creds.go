@@ -1,5 +1,6 @@
 package allocate
 
+// Creds returns jailer uid and gid for id, offset from uidStart and gidStart.
 func Creds(id string, uidStart, gidStart int) (uid, gid int, err error) {
 	n, err := parseID(id)
 	if err != nil {

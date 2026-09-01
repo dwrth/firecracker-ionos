@@ -9,12 +9,15 @@ import (
 	"strings"
 )
 
+// Store persists VM records as JSON files in a directory.
 type Store struct {
 	dir string
 }
 
+// ErrAlreadyExists is returned when Create is called for an existing VM id.
 var ErrAlreadyExists = errors.New("state: vm already exists")
 
+// New returns a Store that reads and writes VM records under dir.
 func New(dir string) *Store {
 	return &Store{dir: dir}
 }
@@ -23,6 +26,7 @@ func (s *Store) path(id string) string {
 	return filepath.Join(s.dir, id+".json")
 }
 
+// Exists reports whether a VM record exists for id.
 func (s *Store) Exists(id string) (bool, error) {
 	_, err := os.Stat(s.path(id))
 	if err == nil {
@@ -35,6 +39,7 @@ func (s *Store) Exists(id string) (bool, error) {
 	return false, err
 }
 
+// Save writes vm to disk, replacing any existing record with the same id.
 func (s *Store) Save(vm VM) error {
 	if err := os.MkdirAll(s.dir, 0o755); err != nil {
 		return err
@@ -67,6 +72,7 @@ func (s *Store) Save(vm VM) error {
 	return os.Rename(tmpName, s.path(vm.ID))
 }
 
+// Load reads the VM record for id.
 func (s *Store) Load(id string) (VM, error) {
 	data, err := os.ReadFile(s.path(id))
 	if err != nil {
@@ -81,6 +87,7 @@ func (s *Store) Load(id string) (VM, error) {
 	return vm, nil
 }
 
+// Create writes a new VM record. It returns ErrAlreadyExists if id is taken.
 func (s *Store) Create(vm VM) error {
 	exists, err := s.Exists(vm.ID)
 	if err != nil {
@@ -92,6 +99,7 @@ func (s *Store) Create(vm VM) error {
 	return s.Save(vm)
 }
 
+// List returns all VM records sorted by id.
 func (s *Store) List() ([]VM, error) {
 	entries, err := os.ReadDir(s.dir)
 	if err != nil {
@@ -117,6 +125,7 @@ func (s *Store) List() ([]VM, error) {
 	return vms, nil
 }
 
+// Delete removes the VM record for id.
 func (s *Store) Delete(id string) error {
 	return os.Remove(s.path(id))
 }

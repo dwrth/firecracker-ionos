@@ -48,6 +48,7 @@ type Firecracker struct {
 	VmDirectory string `yaml:"vm_directory"`
 }
 
+// Load reads and validates configuration from path.
 func (c *Config) Load(path string) error {
 	yamlFile, err := os.ReadFile(path)
 	if err != nil {

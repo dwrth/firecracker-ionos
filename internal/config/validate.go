@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Validate checks that required fields are set and paths exist.
 func (c *Config) Validate() error {
 	if c == nil {
 		return errors.New("config: config is nil")

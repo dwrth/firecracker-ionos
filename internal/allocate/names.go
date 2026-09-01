@@ -2,6 +2,7 @@ package allocate
 
 import "fmt"
 
+// Names holds Linux network interface names for a VM.
 type Names struct {
 	Namespace string
 	HostVeth  string
@@ -9,6 +10,7 @@ type Names struct {
 	TAP       string
 }
 
+// InterfaceNames returns network namespace and interface names for id.
 func InterfaceNames(id string) (Names, error) {
 	n, err := parseID(id)
 	if err != nil {

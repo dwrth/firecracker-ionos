@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// InstallKernel copies the configured kernel into the VM directory for id.
 func (m *Manager) InstallKernel(id string) error {
 	src := m.KernelSource()
 	dst := m.Kernel(id)

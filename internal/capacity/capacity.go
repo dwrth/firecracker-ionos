@@ -11,6 +11,7 @@ import (
 	"github.com/dwrth/knaller/internal/state"
 )
 
+// Capacity summarizes host resources and current VM allocation.
 type Capacity struct {
 	HostCPUs           int
 	HostMemoryMiB      int64
@@ -20,18 +21,22 @@ type Capacity struct {
 	CPUOvercommitRatio float64
 }
 
+// AvailableMemoryMiB returns unallocated memory after reserves and allocations.
 func (c *Capacity) AvailableMemoryMiB() int64 {
 	return int64(math.Max(0, float64(c.HostMemoryMiB-c.ReservedMemoryMiB-c.AllocatedMemoryMiB)))
 }
 
+// MaximumAllocatedVCPUs returns the vCPU limit after overcommit.
 func (c *Capacity) MaximumAllocatedVCPUs() int {
 	return int(float64(c.HostCPUs) * c.CPUOvercommitRatio)
 }
 
+// AvailableVCPUs returns unallocated vCPUs up to the overcommit limit.
 func (c *Capacity) AvailableVCPUs() int {
 	return int(math.Max(0, float64(c.MaximumAllocatedVCPUs()-c.AllocatedVCPUs)))
 }
 
+// Collect reads host resources and sums allocation from existing VMs.
 func Collect(cfg *config.Config) (Capacity, error) {
 	meminfo, err := os.ReadFile("/proc/meminfo")
 	if err != nil {
@@ -62,6 +67,7 @@ func Collect(cfg *config.Config) (Capacity, error) {
 	return capacity, nil
 }
 
+// Print writes a human-readable capacity summary to w.
 func Print(w io.Writer, capacity Capacity) {
 	fmt.Fprintf(w, "===== Host Capacity =====\n")
 	fmt.Fprintf(w, " Host CPUs            : %d\n", capacity.HostCPUs)

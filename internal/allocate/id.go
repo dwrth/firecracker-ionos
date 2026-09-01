@@ -9,6 +9,7 @@ import (
 	"github.com/dwrth/knaller/internal/state"
 )
 
+// NextID returns the lowest unused vm-NNNN id not present in existing.
 func NextID(existing []state.VM) (string, error) {
 	used := make(map[int]struct{}, len(existing))
 	for _, vm := range existing {

@@ -7,6 +7,7 @@ import (
 	"github.com/dwrth/knaller/internal/state"
 )
 
+// Build allocates ids, credentials, networking, and interface names for a new VM.
 func Build(existing []state.VM, cfg *config.Config, name string, vcpus, memoryMiB int) (state.VM, error) {
 	if name == "" {
 		return state.VM{}, fmt.Errorf("allocate: name is required")
