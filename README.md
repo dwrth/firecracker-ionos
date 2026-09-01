@@ -1,7 +1,8 @@
 # Knaller
 
-Dynamic Firecracker microVM manager for an IONOS Cloud Cube. Knaller is
-the German word for "firecracker".
+Dynamic Firecracker microVM manager for an IONOS Cloud Cube.
+
+> Knaller is the German word for "firecracker" (/ˈknalɐ/, roughly _KNALL-er_).
 
 A single Ubuntu host runs many isolated microVMs. The `knaller` CLI
 creates, sizes, starts, stops, lists, inspects, and deletes VMs based on
