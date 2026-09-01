@@ -1,28 +1,28 @@
 # Knaller
 
-Dynamic Firecracker microVM manager for an IONOS Cloud Cube.
+Node-local Firecracker microVM runtime for an IONOS Cloud Cube.
 
 > Knaller is the German word for "firecracker" (/ˈknalɐ/, roughly _KNALL-er_).
 
-A single Ubuntu host runs many isolated microVMs. The `knaller` CLI
-creates, sizes, starts, stops, lists, inspects, and deletes VMs based on
-host capacity. Each VM runs under Firecracker jailer with its own Linux
+A single Ubuntu host runs many isolated microVM sandboxes. The `knaller` CLI
+creates, starts, stops, lists, inspects, and deletes sandboxes subject to
+host capacity. Each sandbox runs under Firecracker jailer with its own Linux
 user, network namespace, cloned rootfs, and TAP/veth networking. systemd
 supervises the lifecycle via `knaller@…` units.
 
 The repo evolved from a static two-VM setup (`v1.0.0`) into this generic
-manager. See the roadmap for current progress.
+node-local runtime. See the roadmap for current progress.
 
 ## CLI
 
 ```text
 knaller capacity          # host resources and what is still free
-knaller create            # provision a new VM
-knaller list              # running and stopped VMs
-knaller inspect <name>    # full VM state and paths
+knaller create            # provision a new sandbox
+knaller list              # running and stopped sandboxes
+knaller inspect <name>    # full sandbox state and paths
 knaller start <name>      # start via systemd
 knaller stop <name>       # graceful shutdown
-knaller delete <name>     # tear down VM and storage
+knaller delete <name>     # tear down sandbox and storage
 knaller config validate   # check /etc/knaller/config.yaml
 ```
 
@@ -30,14 +30,15 @@ Creation examples (target):
 
 ```bash
 knaller create --name web-1 --cpus 2 --memory 512
-knaller create --name worker-1 --size small
-knaller create --name worker-2 --auto
+knaller create --name worker-1 --cpus 1 --memory 256
 ```
 
 Admission enforces strict RAM limits and configurable CPU overcommit.
-Provisioning clones a shared base rootfs, assigns IDs, UID/GID, guest and
-transit subnets, generates Firecracker config, wires networking and NAT,
-and persists state for reboot-safe operation.
+Provisioning clones a shared base rootfs, assigns sandbox-local resources,
+UID/GID, guest and transit subnets, generates Firecracker config, wires
+networking, and persists state for reboot-safe operation.
+
+Higher-level sizing and fleet placement are intentionally outside Knaller.
 
 ## Repository layout
 
@@ -73,9 +74,10 @@ and persists state for reboot-safe operation.
 systemd: knaller@.service, knaller-network@.service
 ```
 
-Each VM gets a deterministic `vm-NNNN` ID, dedicated UID/GID, network
-namespace (`kn-vm-NNNN`), guest `/30` on `172.16.x.x`, and transit
-`/30` on `10.200.x.x` for host↔namespace veth plumbing.
+The current implementation derives UID/GID, network namespaces, and `/30`
+guest/transit networks from deterministic `vm-NNNN` allocations. The next
+runtime stage separates permanent sandbox identity from reusable node-local
+slots while preserving deterministic local resource allocation.
 
 ## Roadmap
 
@@ -84,18 +86,17 @@ namespace (`kn-vm-NNNN`), guest `/30` on `172.16.x.x`, and transit
 - [x] Config loading
 - [x] Capacity reporting
 - [x] VM state model
-- [x] Scheduler / admission
+- [x] Scheduler / node-local admission
 - [x] Resource allocation
 - [x] Base-rootfs workflow
 - [x] Firecracker config
-- [ ] Jailer scripts
-- [ ] Networking / NAT
-- [ ] create
-- [ ] list / inspect
-- [ ] start / stop
-- [ ] delete
-- [ ] Named sizes
-- [ ] Auto sizing
-- [ ] CPU controls
+- [ ] Runtime state / lifecycle foundations
+- [ ] Generic jailer / supervision
+- [ ] Generic networking / default isolation
+- [ ] create / delete with rollback
+- [ ] list / inspect / start / stop
+- [ ] Resource enforcement
 - [ ] doctor / reconcile
+- [ ] Fault / reboot testing
 - [ ] Golden image / clean-room test
+- [ ] Zunder integration
