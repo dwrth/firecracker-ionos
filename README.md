@@ -86,7 +86,7 @@ namespace (`kn-vm-NNNN`), guest `/30` on `172.16.x.x`, and transit
 - [x] Scheduler / admission
 - [x] Resource allocation
 - [x] Base-rootfs workflow
-- [ ] Firecracker config
+- [x] Firecracker config
 - [ ] Jailer scripts
 - [ ] Networking / NAT
 - [ ] create
