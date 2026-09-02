@@ -12,7 +12,7 @@ func TestInstallKernelMissingSource(t *testing.T) {
 	tmp := t.TempDir()
 	cfg := testConfig()
 	cfg.Storage.Kernel = filepath.Join(tmp, "missing-vmlinux")
-	cfg.Firecracker.VmDirectory = filepath.Join(tmp, "vms")
+	cfg.Firecracker.SandboxDirectory = filepath.Join(tmp, "vms")
 
 	m := storage.New(cfg)
 	err := m.InstallKernel("vm-0001")
@@ -25,7 +25,7 @@ func TestInstallKernelAlreadyExists(t *testing.T) {
 	tmp := t.TempDir()
 	cfg := testConfig()
 	cfg.Storage.Kernel = filepath.Join(tmp, "vmlinux")
-	cfg.Firecracker.VmDirectory = filepath.Join(tmp, "vms")
+	cfg.Firecracker.SandboxDirectory = filepath.Join(tmp, "vms")
 
 	if err := os.WriteFile(cfg.Storage.Kernel, []byte("kernel"), 0o644); err != nil {
 		t.Fatal(err)
@@ -50,7 +50,7 @@ func TestInstallKernel(t *testing.T) {
 	tmp := t.TempDir()
 	cfg := testConfig()
 	cfg.Storage.Kernel = filepath.Join(tmp, "vmlinux")
-	cfg.Firecracker.VmDirectory = filepath.Join(tmp, "vms")
+	cfg.Firecracker.SandboxDirectory = filepath.Join(tmp, "vms")
 
 	want := []byte("pinned-kernel-bytes")
 	if err := os.WriteFile(cfg.Storage.Kernel, want, 0o644); err != nil {

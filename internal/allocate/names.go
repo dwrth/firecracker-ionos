@@ -2,7 +2,7 @@ package allocate
 
 import "fmt"
 
-// Names holds Linux network interface names for a VM.
+// Names holds Linux network interface names for a sandbox.
 type Names struct {
 	Namespace string
 	HostVeth  string

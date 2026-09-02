@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// ValidateVMStorage reports whether all expected files exist for id.
-func (m *Manager) ValidateVMStorage(id string) error {
+// ValidateSandboxStorage reports whether all expected files exist for id.
+func (m *Manager) ValidateSandboxStorage(id string) error {
 	required := []struct {
 		name string
 		path string
@@ -29,7 +29,7 @@ func (m *Manager) ValidateVMStorage(id string) error {
 	}
 
 	if len(missing) > 0 {
-		return fmt.Errorf("storage: missing vm storage for %s: %s", id, strings.Join(missing, ", "))
+		return fmt.Errorf("storage: missing sandbox storage for %s: %s", id, strings.Join(missing, ", "))
 	}
 
 	return nil

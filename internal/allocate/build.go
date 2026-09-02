@@ -7,34 +7,34 @@ import (
 	"github.com/dwrth/knaller/internal/state"
 )
 
-// Build allocates ids, credentials, networking, and interface names for a new VM.
-func Build(existing []state.VM, cfg *config.Config, name string, vcpus, memoryMiB int) (state.VM, error) {
+// Build allocates ids, credentials, networking, and interface names for a new sandbox.
+func Build(existing []state.Sandbox, cfg *config.Config, name string, vcpus, memoryMiB int) (state.Sandbox, error) {
 	if name == "" {
-		return state.VM{}, fmt.Errorf("allocate: name is required")
+		return state.Sandbox{}, fmt.Errorf("allocate: name is required")
 	}
 
 	id, err := NextID(existing)
 	if err != nil {
-		return state.VM{}, err
+		return state.Sandbox{}, err
 	}
 	uid, gid, err := Creds(id, cfg.Jailer.UidStart, cfg.Jailer.GidStart)
 	if err != nil {
-		return state.VM{}, err
+		return state.Sandbox{}, err
 	}
 	guest, err := GuestNet(id, cfg.Network.GuestCidr)
 	if err != nil {
-		return state.VM{}, err
+		return state.Sandbox{}, err
 	}
 	transit, err := TransitNet(id, cfg.Network.TransitCidr)
 	if err != nil {
-		return state.VM{}, err
+		return state.Sandbox{}, err
 	}
 	names, err := InterfaceNames(id)
 	if err != nil {
-		return state.VM{}, err
+		return state.Sandbox{}, err
 	}
 
-	return state.VM{
+	return state.Sandbox{
 		ID:            id,
 		Name:          name,
 		UID:           uid,
@@ -51,7 +51,8 @@ func Build(existing []state.VM, cfg *config.Config, name string, vcpus, memoryMi
 		HostVeth:      names.HostVeth,
 		NSVeth:        names.NSVeth,
 		TAP:           names.TAP,
-		Status:        state.StatusStopped,
+		DesiredState:  state.DesiredStopped,
+		ObservedState: state.ObservedRequested,
 	}, nil
 
 }

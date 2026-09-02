@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-// CloneBaseRootfs copies the base rootfs into the VM directory for id.
+// CloneBaseRootfs copies the base rootfs into the sandbox directory for id.
 func (m *Manager) CloneBaseRootfs(id string) error {
 	src := m.BaseRootfs()
 	dst := m.Rootfs(id)
@@ -21,8 +21,8 @@ func (m *Manager) CloneBaseRootfs(id string) error {
 		return err
 	}
 
-	if err := os.MkdirAll(m.VMDir(id), 0o755); err != nil {
-		return fmt.Errorf("storage: mkdir vm dir: %w", err)
+	if err := os.MkdirAll(m.SandboxDir(id), 0o755); err != nil {
+		return fmt.Errorf("storage: mkdir sandbox dir: %w", err)
 	}
 
 	cmd := exec.Command("cp", "--reflink=auto", "--sparse=always", src, dst)

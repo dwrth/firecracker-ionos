@@ -1,4 +1,4 @@
-// Package vm builds per-VM Firecracker configuration from allocated state.
+// Package vm builds per-sandbox Firecracker configuration from allocated state.
 package vm
 
 import (
@@ -39,8 +39,8 @@ type NetworkInterface struct {
 	HostDevName string `json:"host_dev_name"`
 }
 
-func GenerateFirecrackerConfig(vm state.VM) (FirecrackerConfig, error) {
-	mac, err := guestMAC(vm.GuestIP)
+func GenerateFirecrackerConfig(sandbox state.Sandbox) (FirecrackerConfig, error) {
+	mac, err := guestMAC(sandbox.GuestIP)
 	if err != nil {
 		return FirecrackerConfig{}, err
 	}
@@ -56,14 +56,14 @@ func GenerateFirecrackerConfig(vm state.VM) (FirecrackerConfig, error) {
 			IsReadOnly:   false,
 		}},
 		MachineConfig: MachineConfig{
-			VCPUCount:  vm.VCPUs,
-			MemSizeMiB: vm.MemoryMiB,
+			VCPUCount:  sandbox.VCPUs,
+			MemSizeMiB: sandbox.MemoryMiB,
 			SMT:        false,
 		},
 		NetworkInterfaces: []NetworkInterface{{
 			IFaceID:     "eth0",
 			GuestMac:    mac,
-			HostDevName: vm.TAP,
+			HostDevName: sandbox.TAP,
 		}},
 	}, nil
 }
@@ -71,10 +71,10 @@ func GenerateFirecrackerConfig(vm state.VM) (FirecrackerConfig, error) {
 func guestMAC(ip string) (string, error) {
 	addr, err := netip.ParseAddr(ip)
 	if err != nil {
-		return "", fmt.Errorf("vm: guest ip: %w", err)
+		return "", fmt.Errorf("firecracker: guest ip: %w", err)
 	}
 	if !addr.Is4() {
-		return "", fmt.Errorf("vm: guest ip %q is not IPv4", ip)
+		return "", fmt.Errorf("firecracker: guest ip %q is not IPv4", ip)
 	}
 
 	o := addr.As4()

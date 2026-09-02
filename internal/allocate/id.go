@@ -1,4 +1,4 @@
-// Package allocate will allocate VMs.
+// Package allocate will allocate sandboxes.
 package allocate
 
 import (
@@ -10,10 +10,10 @@ import (
 )
 
 // NextID returns the lowest unused vm-NNNN id not present in existing.
-func NextID(existing []state.VM) (string, error) {
+func NextID(existing []state.Sandbox) (string, error) {
 	used := make(map[int]struct{}, len(existing))
-	for _, vm := range existing {
-		n, err := parseID(vm.ID)
+	for _, sandbox := range existing {
+		n, err := parseID(sandbox.ID)
 		if err != nil {
 			return "", err
 		}

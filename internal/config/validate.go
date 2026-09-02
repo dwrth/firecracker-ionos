@@ -31,17 +31,17 @@ func (c *Config) Validate() error {
 	if c.Scheduler.HostMemoryReserveMiB <= 0 {
 		return errors.New("config: scheduler.host_memory_reserve_mib must be greater than 0")
 	}
-	if c.Scheduler.MinimumVMMemoryMiB <= 0 {
-		return errors.New("config: scheduler.minimum_vm_memory_mib must be greater than 0")
+	if c.Scheduler.MinimumSandboxMemoryMiB <= 0 {
+		return errors.New("config: scheduler.minimum_sandbox_memory_mib must be greater than 0")
 	}
-	if c.Scheduler.MaximumVMMemoryMiB <= 0 {
-		return errors.New("config: scheduler.maximum_vm_memory_mib must be greater than 0")
+	if c.Scheduler.MaximumSandboxMemoryMiB <= 0 {
+		return errors.New("config: scheduler.maximum_sandbox_memory_mib must be greater than 0")
 	}
-	if c.Scheduler.MaximumVMMemoryMiB < c.Scheduler.MinimumVMMemoryMiB {
-		return errors.New("config: scheduler.maximum_vm_memory_mib must be greater than or equal to scheduler.minimum_vm_memory_mib")
+	if c.Scheduler.MaximumSandboxMemoryMiB < c.Scheduler.MinimumSandboxMemoryMiB {
+		return errors.New("config: scheduler.maximum_sandbox_memory_mib must be greater than or equal to scheduler.minimum_sandbox_memory_mib")
 	}
-	if c.Scheduler.MaximumVMVCPUs <= 0 {
-		return errors.New("config: scheduler.maximum_vm_vcpus must be greater than 0")
+	if c.Scheduler.MaximumSandboxVCPUs <= 0 {
+		return errors.New("config: scheduler.maximum_sandbox_vcpus must be greater than 0")
 	}
 
 	if _, err := netip.ParsePrefix(c.Network.GuestCidr); err != nil {
@@ -65,8 +65,8 @@ func (c *Config) Validate() error {
 		return errors.New("config: state.directory is required")
 	}
 
-	if c.Firecracker.VmDirectory == "" {
-		return errors.New("config: firecracker.vm_directory is required")
+	if c.Firecracker.SandboxDirectory == "" {
+		return errors.New("config: firecracker.sandbox_directory is required")
 	}
 
 	return nil

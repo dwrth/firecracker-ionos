@@ -11,9 +11,9 @@ import (
 	"github.com/dwrth/knaller/internal/state"
 )
 
-// CustomizeRootfs writes per-VM identity and network settings into a cloned rootfs.
-func (m *Manager) CustomizeRootfs(vm state.VM) error {
-	rootfs := m.Rootfs(vm.ID)
+// CustomizeRootfs writes per-sandbox identity and network settings into a cloned rootfs.
+func (m *Manager) CustomizeRootfs(sandbox state.Sandbox) error {
+	rootfs := m.Rootfs(sandbox.ID)
 	if _, err := os.Stat(rootfs); err != nil {
 		return fmt.Errorf("storage: rootfs: %w", err)
 	}
@@ -26,14 +26,14 @@ func (m *Manager) CustomizeRootfs(vm state.VM) error {
 		_ = unmountRootfs(mountPoint, loop)
 	}()
 
-	if err := customizeMountedRootfs(mountPoint, vm); err != nil {
+	if err := customizeMountedRootfs(mountPoint, sandbox); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func customizeMountedRootfs(mountPoint string, vm state.VM) error {
+func customizeMountedRootfs(mountPoint string, sandbox state.Sandbox) error {
 	etcDir := filepath.Join(mountPoint, "etc")
 	if err := os.MkdirAll(etcDir, 0o755); err != nil {
 		return fmt.Errorf("storage: mkdir etc: %w", err)
@@ -41,7 +41,7 @@ func customizeMountedRootfs(mountPoint string, vm state.VM) error {
 
 	if err := os.WriteFile(
 		filepath.Join(etcDir, "hostname"),
-		[]byte(vm.ID+"\n"),
+		[]byte(sandbox.ID+"\n"),
 		0o644,
 	); err != nil {
 		return fmt.Errorf("storage: write hostname: %w", err)
@@ -49,7 +49,7 @@ func customizeMountedRootfs(mountPoint string, vm state.VM) error {
 
 	host := fmt.Sprintf(
 		"127.0.0.1 localhost\n127.0.1.1 %s\n\n::1 localhost ip6-localhost ip6-loopback\n",
-		vm.ID,
+		sandbox.ID,
 	)
 	if err := os.WriteFile(
 		filepath.Join(etcDir, "hosts"),
@@ -71,7 +71,7 @@ Address=%s/30
 Gateway=%s
 IPv6AcceptRA=no
 LinkLocalAddressing=no
-`, vm.GuestIP, vm.GatewayIP)
+`, sandbox.GuestIP, sandbox.GatewayIP)
 	if err := os.WriteFile(
 		filepath.Join(networkDir, "10-eth0.network"),
 		[]byte(network),

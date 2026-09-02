@@ -5,19 +5,19 @@ import (
 	"os"
 )
 
-// DeleteVMStorage removes the VM storage directory for id.
-func (m *Manager) DeleteVMStorage(id string) error {
-	dir := m.VMDir(id)
+// DeleteSandboxStorage removes the sandbox storage directory for id.
+func (m *Manager) DeleteSandboxStorage(id string) error {
+	dir := m.SandboxDir(id)
 
 	if _, err := os.Stat(dir); err != nil {
 		if os.IsNotExist(err) {
 			return nil
 		}
-		return fmt.Errorf("storage: stat vm dir: %w", err)
+		return fmt.Errorf("storage: stat sandbox dir: %w", err)
 	}
 
 	if err := os.RemoveAll(dir); err != nil {
-		return fmt.Errorf("storage: deletevm storage: %w", err)
+		return fmt.Errorf("storage: delete sandbox storage: %w", err)
 	}
 
 	return nil

@@ -9,13 +9,13 @@ import (
 	"github.com/dwrth/knaller/internal/storage"
 )
 
-func TestValidateVMStorageMissing(t *testing.T) {
+func TestValidateSandboxStorageMissing(t *testing.T) {
 	tmp := t.TempDir()
 	cfg := testConfig()
-	cfg.Firecracker.VmDirectory = filepath.Join(tmp, "vms")
+	cfg.Firecracker.SandboxDirectory = filepath.Join(tmp, "vms")
 
 	m := storage.New(cfg)
-	err := m.ValidateVMStorage("vm-0001")
+	err := m.ValidateSandboxStorage("vm-0001")
 	if err == nil {
 		t.Fatal("expected validation error")
 	}
@@ -26,13 +26,13 @@ func TestValidateVMStorageMissing(t *testing.T) {
 	}
 }
 
-func TestValidateVMStorageOK(t *testing.T) {
+func TestValidateSandboxStorageOK(t *testing.T) {
 	tmp := t.TempDir()
 	cfg := testConfig()
-	cfg.Firecracker.VmDirectory = filepath.Join(tmp, "vms")
+	cfg.Firecracker.SandboxDirectory = filepath.Join(tmp, "vms")
 
 	m := storage.New(cfg)
-	dir := m.VMDir("vm-0001")
+	dir := m.SandboxDir("vm-0001")
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func TestValidateVMStorageOK(t *testing.T) {
 		}
 	}
 
-	if err := m.ValidateVMStorage("vm-0001"); err != nil {
-		t.Fatalf("ValidateVMStorage() = %v", err)
+	if err := m.ValidateSandboxStorage("vm-0001"); err != nil {
+		t.Fatalf("ValidateSandboxStorage() = %v", err)
 	}
 }

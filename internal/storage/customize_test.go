@@ -10,8 +10,8 @@ import (
 	"github.com/dwrth/knaller/internal/storage"
 )
 
-func testVM() state.VM {
-	return state.VM{
+func testSandbox() state.Sandbox {
+	return state.Sandbox{
 		ID:        "vm-0004",
 		Name:      "worker-1",
 		GuestIP:   "172.16.4.2",
@@ -22,7 +22,7 @@ func testVM() state.VM {
 func TestCustomizeMountedRootfs(t *testing.T) {
 	root := t.TempDir()
 
-	if err := storage.CustomizeMountedRootfsForTest(root, testVM()); err != nil {
+	if err := storage.CustomizeMountedRootfsForTest(root, testSandbox()); err != nil {
 		t.Fatal(err)
 	}
 
@@ -39,7 +39,7 @@ func TestCustomizeMountedRootfs(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !strings.Contains(string(hosts), "127.0.1.1 vm-0004") {
-		t.Errorf("hosts missing vm entry: %s", hosts)
+		t.Errorf("hosts missing sandbox entry: %s", hosts)
 	}
 
 	network, err := os.ReadFile(filepath.Join(root, "etc/systemd/network/10-eth0.network"))
@@ -65,9 +65,9 @@ func TestCustomizeMountedRootfs(t *testing.T) {
 
 func TestCustomizeMountedRootfsUniqueMachineID(t *testing.T) {
 	root := t.TempDir()
-	vm := testVM()
+	sandbox := testSandbox()
 
-	if err := storage.CustomizeMountedRootfsForTest(root, vm); err != nil {
+	if err := storage.CustomizeMountedRootfsForTest(root, sandbox); err != nil {
 		t.Fatal(err)
 	}
 	first, err := os.ReadFile(filepath.Join(root, "etc/machine-id"))
@@ -75,7 +75,7 @@ func TestCustomizeMountedRootfsUniqueMachineID(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := storage.CustomizeMountedRootfsForTest(root, vm); err != nil {
+	if err := storage.CustomizeMountedRootfsForTest(root, sandbox); err != nil {
 		t.Fatal(err)
 	}
 	second, err := os.ReadFile(filepath.Join(root, "etc/machine-id"))

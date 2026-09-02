@@ -5,9 +5,9 @@ storage:
 scheduler:
  host_memory_reserve_mib: 768
  cpu_overcommit_ratio: 2.0
- minimum_vm_memory_mib: 128
- maximum_vm_memory_mib: 8192
- maximum_vm_vcpus: 32
+ minimum_sandbox_memory_mib: 128
+ maximum_sandbox_memory_mib: 8192
+ maximum_sandbox_vcpus: 32
 
 network:
  guest_cidr: 172.16.0.0/16
@@ -22,4 +22,4 @@ state:
  directory: /var/lib/knaller/state
 
 firecracker:
- vm_directory: /var/lib/knaller/vms
+ sandbox_directory: /var/lib/knaller/vms

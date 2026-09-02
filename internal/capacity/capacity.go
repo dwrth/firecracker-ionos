@@ -1,4 +1,4 @@
-// Package capacity will report host and VM resource capacity.
+// Package capacity will report host and sandbox resource capacity.
 package capacity
 
 import (
@@ -11,7 +11,7 @@ import (
 	"github.com/dwrth/knaller/internal/state"
 )
 
-// Capacity summarizes host resources and current VM allocation.
+// Capacity summarizes host resources and current sandbox allocation.
 type Capacity struct {
 	HostCPUs           int
 	HostMemoryMiB      int64
@@ -36,7 +36,7 @@ func (c *Capacity) AvailableVCPUs() int {
 	return int(math.Max(0, float64(c.MaximumAllocatedVCPUs()-c.AllocatedVCPUs)))
 }
 
-// Collect reads host resources and sums allocation from existing VMs.
+// Collect reads host resources and sums allocation from existing sandboxes.
 func Collect(cfg *config.Config) (Capacity, error) {
 	meminfo, err := os.ReadFile("/proc/meminfo")
 	if err != nil {
@@ -48,12 +48,12 @@ func Collect(cfg *config.Config) (Capacity, error) {
 		return Capacity{}, fmt.Errorf("capacity: failed to parse meminfo: %v", err)
 	}
 
-	vms, err := state.New(cfg.State.Directory).List()
+	sandboxes, err := state.New(cfg.State.Directory).List()
 	if err != nil {
-		return Capacity{}, fmt.Errorf("capacity: failed to list VMs: %w", err)
+		return Capacity{}, fmt.Errorf("capacity: failed to list sandboxes: %w", err)
 	}
 
-	allocatedVCPUs, allocatedMemoryMiB := sumAllocated(vms)
+	allocatedVCPUs, allocatedMemoryMiB := sumAllocated(sandboxes)
 
 	capacity := Capacity{
 		HostCPUs:           hostCPUs(),
@@ -83,10 +83,10 @@ func Print(w io.Writer, capacity Capacity) {
 	fmt.Fprintf(w, "=============================\n")
 }
 
-func sumAllocated(vms []state.VM) (vcpus int, memoryMiB int64) {
-	for _, vm := range vms {
-		vcpus += vm.VCPUs
-		memoryMiB += int64(vm.MemoryMiB)
+func sumAllocated(sandboxes []state.Sandbox) (vcpus int, memoryMiB int64) {
+	for _, sandbox := range sandboxes {
+		vcpus += sandbox.VCPUs
+		memoryMiB += int64(sandbox.MemoryMiB)
 	}
 	return vcpus, memoryMiB
 }

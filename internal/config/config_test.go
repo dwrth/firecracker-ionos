@@ -29,9 +29,9 @@ func TestConfig_Validate(t *testing.T) {
 		Scheduler: config.Scheduler{
 			HostMemoryReserveMiB: 256,
 			CPUOvercommitRatio:   2.0,
-			MinimumVMMemoryMiB:   128,
-			MaximumVMMemoryMiB:   512,
-			MaximumVMVCPUs:       4,
+			MinimumSandboxMemoryMiB:   128,
+			MaximumSandboxMemoryMiB:   512,
+			MaximumSandboxVCPUs:       4,
 		},
 		Network: config.Network{
 			GuestCidr:   "10.0.0.0/24",
@@ -46,7 +46,7 @@ func TestConfig_Validate(t *testing.T) {
 			Directory: "/var/state",
 		},
 		Firecracker: config.Firecracker{
-			VmDirectory: "/var/vms",
+			SandboxDirectory: "/var/sandboxes",
 		},
 	}
 
@@ -115,30 +115,30 @@ func TestConfig_Validate(t *testing.T) {
 			}(),
 		},
 		{
-			name:    "minimum_vm_memory_mib too low",
+			name:    "minimum_sandbox_memory_mib too low",
 			wantErr: true,
 			config: func() config.Config {
 				cfg := validCfg
-				cfg.Scheduler.MinimumVMMemoryMiB = 0
+				cfg.Scheduler.MinimumSandboxMemoryMiB = 0
 				return cfg
 			}(),
 		},
 		{
-			name:    "maximum_vm_memory_mib too low",
+			name:    "maximum_sandbox_memory_mib too low",
 			wantErr: true,
 			config: func() config.Config {
 				cfg := validCfg
-				cfg.Scheduler.MaximumVMMemoryMiB = 0
+				cfg.Scheduler.MaximumSandboxMemoryMiB = 0
 				return cfg
 			}(),
 		},
 		{
-			name:    "maximum_vm_memory_mib less than minimum_vm_memory_mib",
+			name:    "maximum_sandbox_memory_mib less than minimum_sandbox_memory_mib",
 			wantErr: true,
 			config: func() config.Config {
 				cfg := validCfg
-				cfg.Scheduler.MaximumVMMemoryMiB = 64
-				cfg.Scheduler.MinimumVMMemoryMiB = 128
+				cfg.Scheduler.MaximumSandboxMemoryMiB = 64
+				cfg.Scheduler.MinimumSandboxMemoryMiB = 128
 				return cfg
 			}(),
 		},
@@ -197,11 +197,11 @@ func TestConfig_Validate(t *testing.T) {
 			}(),
 		},
 		{
-			name:    "missing firecracker.vm_directory",
+			name:    "missing firecracker.sandbox_directory",
 			wantErr: true,
 			config: func() config.Config {
 				cfg := validCfg
-				cfg.Firecracker.VmDirectory = ""
+				cfg.Firecracker.SandboxDirectory = ""
 				return cfg
 			}(),
 		},

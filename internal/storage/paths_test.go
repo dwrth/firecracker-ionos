@@ -14,7 +14,7 @@ func testConfig() *config.Config {
 			Kernel:     "/var/lib/knaller/images/vmlinux-6.18.44",
 		},
 		Firecracker: config.Firecracker{
-			VmDirectory: "/var/lib/knaller/vms",
+			SandboxDirectory: "/var/lib/knaller/vms",
 		},
 	}
 }
@@ -28,8 +28,8 @@ func TestManagerPaths(t *testing.T) {
 	if got, want := m.KernelSource(), "/var/lib/knaller/images/vmlinux-6.18.44"; got != want {
 		t.Errorf("KernelSource() = %q, want %q", got, want)
 	}
-	if got, want := m.VMDir("vm-0004"), "/var/lib/knaller/vms/vm-0004"; got != want {
-		t.Errorf("VMDir() = %q, want %q", got, want)
+	if got, want := m.SandboxDir("vm-0004"), "/var/lib/knaller/vms/vm-0004"; got != want {
+		t.Errorf("SandboxDir() = %q, want %q", got, want)
 	}
 	if got, want := m.Rootfs("vm-0004"), "/var/lib/knaller/vms/vm-0004/rootfs.ext4"; got != want {
 		t.Errorf("Rootfs() = %q, want %q", got, want)

@@ -135,7 +135,7 @@ Flags:
 		fs.PrintDefaults()
 	}
 	configPath := fs.String("config", defaultConfigPath, "path to knaller config file")
-	name := fs.String("name", "", "VM name")
+	name := fs.String("name", "", "sandbox name")
 	cpus := fs.Int("cpus", 0, "vCPUs")
 	memory := fs.Int("memory", 0, "memory in MiB")
 	dryRun := fs.Bool("dry-run", false, "print allocation without writing state")
@@ -164,7 +164,7 @@ Flags:
 	store := state.New(cfg.State.Directory)
 	existing, err := store.List()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to list VMs: %v\n", err)
+		fmt.Fprintf(os.Stderr, "failed to list sandboxes: %v\n", err)
 		return 1
 	}
 
@@ -179,32 +179,32 @@ Flags:
 		return 1
 	}
 
-	vm, err := allocate.Build(existing, &cfg, *name, *cpus, *memory)
+	sandbox, err := allocate.Build(existing, &cfg, *name, *cpus, *memory)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "allocation failed: %v\n", err)
 		return 1
 	}
 
-	fmt.Fprintf(os.Stdout, "dry-run: would create %s (%s)\n", vm.ID, vm.Name)
-	fmt.Fprintf(os.Stdout, "  uid/gid        %d/%d\n", vm.UID, vm.GID)
-	fmt.Fprintf(os.Stdout, "  vcpus/memory   %d / %d MiB\n", vm.VCPUs, vm.MemoryMiB)
-	fmt.Fprintf(os.Stdout, "  guest          %s  gw %s  subnet %s\n", vm.GuestIP, vm.GatewayIP, vm.GuestSubnet)
-	fmt.Fprintf(os.Stdout, "  transit        host %s  ns %s  subnet %s\n", vm.TransitHostIP, vm.TransitNSIP, vm.TransitSubnet)
-	fmt.Fprintf(os.Stdout, "  netns/veth/tap %s  %s/%s  %s\n", vm.Namespace, vm.HostVeth, vm.NSVeth, vm.TAP)
+	fmt.Fprintf(os.Stdout, "dry-run: would create %s (%s)\n", sandbox.ID, sandbox.Name)
+	fmt.Fprintf(os.Stdout, "  uid/gid        %d/%d\n", sandbox.UID, sandbox.GID)
+	fmt.Fprintf(os.Stdout, "  vcpus/memory   %d / %d MiB\n", sandbox.VCPUs, sandbox.MemoryMiB)
+	fmt.Fprintf(os.Stdout, "  guest          %s  gw %s  subnet %s\n", sandbox.GuestIP, sandbox.GatewayIP, sandbox.GuestSubnet)
+	fmt.Fprintf(os.Stdout, "  transit        host %s  ns %s  subnet %s\n", sandbox.TransitHostIP, sandbox.TransitNSIP, sandbox.TransitSubnet)
+	fmt.Fprintf(os.Stdout, "  netns/veth/tap %s  %s/%s  %s\n", sandbox.Namespace, sandbox.HostVeth, sandbox.NSVeth, sandbox.TAP)
 	return 0
 }
 
 func printUsage(w io.Writer) {
 	fmt.Fprint(w, `Usage: knaller <command> [flags]
 Commands:
-  capacity   Show host and VM resource capacity
+  capacity   Show host and sandbox resource capacity
   config     Manage configuration
-  create     Create a new microVM
-  list       List microVMs
-  inspect    Show details for a microVM
-  start      Start a microVM
-  stop       Stop a microVM
-  delete     Delete a microVM
+  create     Create a new sandbox
+  list       List sandboxes
+  inspect    Show details for a sandbox
+  start      Start a sandbox
+  stop       Stop a sandbox
+  delete     Delete a sandbox
 `)
 }
 

@@ -24,9 +24,9 @@ type Storage struct {
 type Scheduler struct {
 	HostMemoryReserveMiB int     `yaml:"host_memory_reserve_mib"`
 	CPUOvercommitRatio   float64 `yaml:"cpu_overcommit_ratio"`
-	MinimumVMMemoryMiB   int     `yaml:"minimum_vm_memory_mib"`
-	MaximumVMMemoryMiB   int     `yaml:"maximum_vm_memory_mib"`
-	MaximumVMVCPUs       int     `yaml:"maximum_vm_vcpus"`
+	MinimumSandboxMemoryMiB   int     `yaml:"minimum_sandbox_memory_mib"`
+	MaximumSandboxMemoryMiB   int     `yaml:"maximum_sandbox_memory_mib"`
+	MaximumSandboxVCPUs       int     `yaml:"maximum_sandbox_vcpus"`
 }
 
 type Network struct {
@@ -45,7 +45,7 @@ type State struct {
 }
 
 type Firecracker struct {
-	VmDirectory string `yaml:"vm_directory"`
+	SandboxDirectory string `yaml:"sandbox_directory"`
 }
 
 // Load reads and validates configuration from path.

@@ -1,4 +1,4 @@
-// Package storage provisions per-VM disks and kernels
+// Package storage provisions per-sandbox disks and kernels
 package storage
 
 import (
@@ -27,22 +27,22 @@ func (m *Manager) KernelSource() string {
 	return m.cfg.Storage.Kernel
 }
 
-// VMDir returns the directory for VM id.
-func (m *Manager) VMDir(id string) string {
-	return filepath.Join(m.cfg.Firecracker.VmDirectory, id)
+// SandboxDir returns the directory for sandbox id.
+func (m *Manager) SandboxDir(id string) string {
+	return filepath.Join(m.cfg.Firecracker.SandboxDirectory, id)
 }
 
-// Rootfs returns the rootfs path for VM id.
+// Rootfs returns the rootfs path for sandbox id.
 func (m *Manager) Rootfs(id string) string {
-	return filepath.Join(m.VMDir(id), "rootfs.ext4")
+	return filepath.Join(m.SandboxDir(id), "rootfs.ext4")
 }
 
-// Kernel returns the kernel path for VM id.
+// Kernel returns the kernel path for sandbox id.
 func (m *Manager) Kernel(id string) string {
-	return filepath.Join(m.VMDir(id), "vmlinux")
+	return filepath.Join(m.SandboxDir(id), "vmlinux")
 }
 
-// Config returns the Firecracker config path for VM id.
+// Config returns the Firecracker config path for sandbox id.
 func (m *Manager) Config(id string) string {
-	return filepath.Join(m.VMDir(id), "config.json")
+	return filepath.Join(m.SandboxDir(id), "config.json")
 }

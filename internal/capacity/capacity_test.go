@@ -110,7 +110,7 @@ func TestCapacity_AvailableVCPUs(t *testing.T) {
 }
 
 func TestCapacity_sumAllocated(t *testing.T) {
-	vcpus, mem := sumAllocated([]state.VM{
+	vcpus, mem := sumAllocated([]state.Sandbox{
 		{VCPUs: 2, MemoryMiB: 1024},
 		{VCPUs: 1, MemoryMiB: 512},
 	})

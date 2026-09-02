@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// InstallKernel copies the configured kernel into the VM directory for id.
+// InstallKernel copies the configured kernel into the sandbox directory for id.
 func (m *Manager) InstallKernel(id string) error {
 	src := m.KernelSource()
 	dst := m.Kernel(id)
@@ -21,8 +21,8 @@ func (m *Manager) InstallKernel(id string) error {
 		return err
 	}
 
-	if err := os.MkdirAll(m.VMDir(id), 0o755); err != nil {
-		return fmt.Errorf("storage: mkdir vm dir: %w", err)
+	if err := os.MkdirAll(m.SandboxDir(id), 0o755); err != nil {
+		return fmt.Errorf("storage: mkdir sandbox dir: %w", err)
 	}
 
 	if err := copyFile(src, dst); err != nil {

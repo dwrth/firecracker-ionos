@@ -85,7 +85,7 @@ slots while preserving deterministic local resource allocation.
 - [x] Go CLI skeleton
 - [x] Config loading
 - [x] Capacity reporting
-- [x] VM state model
+- [x] Sandbox state model
 - [x] Scheduler / node-local admission
 - [x] Resource allocation
 - [x] Base-rootfs workflow

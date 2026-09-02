@@ -12,9 +12,9 @@ import (
 func testCfg() *config.Config {
 	return &config.Config{
 		Scheduler: config.Scheduler{
-			MinimumVMMemoryMiB: 128,
-			MaximumVMMemoryMiB: 2048,
-			MaximumVMVCPUs:     4,
+			MinimumSandboxMemoryMiB: 128,
+			MaximumSandboxMemoryMiB: 2048,
+			MaximumSandboxVCPUs:     4,
 		},
 	}
 }

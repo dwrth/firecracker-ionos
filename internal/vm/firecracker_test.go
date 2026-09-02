@@ -13,33 +13,33 @@ import (
 
 func TestGenerateFirecrackerConfig_matchesGolden(t *testing.T) {
 	tests := []struct {
-		name  string
-		vm    state.VM
-		guest string
+		name     string
+		sandbox  state.Sandbox
+		guestDir string
 	}{
 		{
 			name: "vm1",
-			vm: state.VM{
+			sandbox: state.Sandbox{
 				VCPUs:     1,
 				MemoryMiB: 256,
 				GuestIP:   "172.16.1.2",
 				TAP:       "tap0",
 			},
-			guest: "vm1",
+			guestDir: "vm1",
 		},
 		{
 			name: "vm2",
-			vm: state.VM{
+			sandbox: state.Sandbox{
 				VCPUs:     1,
 				MemoryMiB: 256,
 				GuestIP:   "172.16.2.2",
 				TAP:       "tap0",
 			},
-			guest: "vm2",
+			guestDir: "vm2",
 		},
 		{
 			name: "plan vm-0004",
-			vm: state.VM{
+			sandbox: state.Sandbox{
 				ID:        "vm-0004",
 				Name:      "worker-1",
 				VCPUs:     2,
@@ -47,19 +47,19 @@ func TestGenerateFirecrackerConfig_matchesGolden(t *testing.T) {
 				GuestIP:   "172.16.4.2",
 				TAP:       "tap0",
 			},
-			guest: "",
+			guestDir: "",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := vm.GenerateFirecrackerConfig(tt.vm)
+			got, err := vm.GenerateFirecrackerConfig(tt.sandbox)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if tt.guest != "" {
-				want := loadGoldenConfig(t, tt.guest)
+			if tt.guestDir != "" {
+				want := loadGoldenConfig(t, tt.guestDir)
 				if !reflect.DeepEqual(got, want) {
 					t.Fatalf("GenerateFirecrackerConfig() = %+v, want %+v", got, want)
 				}
@@ -77,7 +77,7 @@ func TestGenerateFirecrackerConfig_matchesGolden(t *testing.T) {
 }
 
 func TestGenerateFirecrackerConfig_invalidGuestIP(t *testing.T) {
-	_, err := vm.GenerateFirecrackerConfig(state.VM{
+	_, err := vm.GenerateFirecrackerConfig(state.Sandbox{
 		VCPUs:     1,
 		MemoryMiB: 256,
 		GuestIP:   "not-an-ip",
