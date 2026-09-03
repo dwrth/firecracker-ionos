@@ -13,24 +13,16 @@ type Net struct {
 }
 
 // GuestNet carves a /30 guest subnet from guestCIDR for id.
-func GuestNet(id, guestCIDR string) (Net, error) {
-	return subnetFor(id, guestCIDR)
+func GuestNet(slot int, guestCIDR string) (Net, error) {
+	return subnetFor(slot, guestCIDR)
 }
 
 // TransitNet carves a /30 transit subnet from transitCIDR for id.
-func TransitNet(id, transitCIDR string) (Net, error) {
-	return subnetFor(id, transitCIDR)
+func TransitNet(slot int, transitCIDR string) (Net, error) {
+	return subnetFor(slot, transitCIDR)
 }
 
-func subnetFor(id, parentCIDR string) (Net, error) {
-	n, err := parseSlotKey(id)
-	if err != nil {
-		return Net{}, err
-	}
-	if n < 1 || n > 255 {
-		return Net{}, fmt.Errorf("allocate: vm index %d out of range for /30 carving", n)
-	}
-
+func subnetFor(slot int, parentCIDR string) (Net, error) {
 	parent, err := netip.ParsePrefix(parentCIDR)
 	if err != nil {
 		return Net{}, fmt.Errorf("allocate: invalid cidr %q: %w", parentCIDR, err)
@@ -41,7 +33,7 @@ func subnetFor(id, parentCIDR string) (Net, error) {
 	}
 
 	octets := addr.As4()
-	octets[2] = byte(n)
+	octets[2] = byte(slot)
 	octets[3] = 0
 	network := netip.AddrFrom4(octets)
 	subnet := netip.PrefixFrom(network, 30)

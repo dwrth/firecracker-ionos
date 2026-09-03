@@ -6,6 +6,7 @@ import (
 	"github.com/dwrth/knaller/internal/allocate"
 	"github.com/dwrth/knaller/internal/config"
 	"github.com/dwrth/knaller/internal/state"
+	"github.com/oklog/ulid/v2"
 )
 
 func TestBuild(t *testing.T) {
@@ -17,8 +18,12 @@ func TestBuild(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if sandbox.ID != "vm-0001" || sandbox.UID != 12001 || sandbox.GuestIP != "172.16.1.2" {
+	if sandbox.Slot != 1 || sandbox.UID != 12001 || sandbox.GuestIP != "172.16.1.2" {
 		t.Fatalf("Build() = %+v", sandbox)
+	}
+	_, err = ulid.Parse(sandbox.ID)
+	if err != nil {
+		t.Fatal(err)
 	}
 	if sandbox.DesiredState != state.DesiredStopped {
 		t.Fatalf("desired state = %v, want stopped", sandbox.DesiredState)

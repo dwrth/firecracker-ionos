@@ -13,30 +13,30 @@ func Build(existing []state.Sandbox, cfg *config.Config, name string, vcpus, mem
 		return state.Sandbox{}, fmt.Errorf("allocate: name is required")
 	}
 
-	id, err := NextSlotKey(existing)
+	id, err := NewSandboxID(existing)
 	if err != nil {
 		return state.Sandbox{}, err
 	}
-	uid, gid, err := Creds(id, cfg.Jailer.UidStart, cfg.Jailer.GidStart)
-	if err != nil {
-		return state.Sandbox{}, err
-	}
-	guest, err := GuestNet(id, cfg.Network.GuestCidr)
-	if err != nil {
-		return state.Sandbox{}, err
-	}
-	transit, err := TransitNet(id, cfg.Network.TransitCidr)
-	if err != nil {
-		return state.Sandbox{}, err
-	}
-	names, err := InterfaceNames(id)
+	slot, err := NextSlot(existing)
 	if err != nil {
 		return state.Sandbox{}, err
 	}
 
+	uid, gid := Creds(slot, cfg.Jailer.UidStart, cfg.Jailer.GidStart)
+	guest, err := GuestNet(slot, cfg.Network.GuestCidr)
+	if err != nil {
+		return state.Sandbox{}, err
+	}
+	transit, err := TransitNet(slot, cfg.Network.TransitCidr)
+	if err != nil {
+		return state.Sandbox{}, err
+	}
+	names := InterfaceNames(slot)
+
 	return state.Sandbox{
 		ID:            id,
 		Name:          name,
+		Slot:          slot,
 		UID:           uid,
 		GID:           gid,
 		VCPUs:         vcpus,

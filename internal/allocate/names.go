@@ -11,15 +11,11 @@ type Names struct {
 }
 
 // InterfaceNames returns network namespace and interface names for id.
-func InterfaceNames(id string) (Names, error) {
-	n, err := parseSlotKey(id)
-	if err != nil {
-		return Names{}, err
-	}
+func InterfaceNames(slot int) Names {
 	return Names{
-		Namespace: fmt.Sprintf("kn-%s", id),
-		HostVeth:  fmt.Sprintf("kn%d-host", n),
-		NSVeth:    fmt.Sprintf("kn%d-ns", n),
+		Namespace: fmt.Sprintf("kn-sandbox-%04d", slot),
+		HostVeth:  fmt.Sprintf("kn%d-host", slot),
+		NSVeth:    fmt.Sprintf("kn%d-ns", slot),
 		TAP:       "tap0",
-	}, nil
+	}
 }

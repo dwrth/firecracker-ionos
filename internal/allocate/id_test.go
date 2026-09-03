@@ -8,41 +8,10 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func TestNextSlotKey(t *testing.T) {
-	tests := []struct {
-		name     string
-		existing []state.Sandbox
-		want     string
-	}{
-		{"empty", nil, "vm-0001"},
-		{"sequential", []state.Sandbox{{ID: "vm-0001"}, {ID: "vm-0002"}}, "vm-0003"},
-		{"hole", []state.Sandbox{{ID: "vm-0001"}, {ID: "vm-0003"}}, "vm-0002"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := allocate.NextSlotKey(tt.existing)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if got != tt.want {
-				t.Errorf("NextSlotKey() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestCreds(t *testing.T) {
-	uid, gid, err := allocate.Creds("vm-0004", 12000, 12000)
-	if err != nil {
-		t.Fatal(err)
-	}
+	uid, gid := allocate.Creds(4, 12000, 12000)
 	if uid != 12004 || gid != 12004 {
 		t.Errorf("Creds() = %d, %d, want 12004, 12004", uid, gid)
-	}
-
-	_, _, err = allocate.Creds("bad-vm-id", 12000, 12000)
-	if err == nil {
-		t.Fatal("expected error for invalid id")
 	}
 }
 

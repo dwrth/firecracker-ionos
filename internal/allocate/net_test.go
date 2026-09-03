@@ -7,7 +7,7 @@ import (
 )
 
 func TestGuestNet(t *testing.T) {
-	got, err := allocate.GuestNet("vm-0001", "172.16.0.0/16")
+	got, err := allocate.GuestNet(1, "172.16.0.0/16")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -17,7 +17,7 @@ func TestGuestNet(t *testing.T) {
 }
 
 func TestTransitNet(t *testing.T) {
-	got, err := allocate.TransitNet("vm-0002", "10.200.0.0/16")
+	got, err := allocate.TransitNet(2, "10.200.0.0/16")
 	if err != nil {
 		t.Fatal(err)
 	}
