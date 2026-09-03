@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-// DeleteSandboxStorage removes the sandbox storage directory for id.
+// DeleteSandboxStorage removes the sandbox storage directory for the given sandbox ID.
 func (m *Manager) DeleteSandboxStorage(id string) error {
 	dir := m.SandboxDir(id)
 

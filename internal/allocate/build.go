@@ -7,7 +7,7 @@ import (
 	"github.com/dwrth/knaller/internal/state"
 )
 
-// Build allocates ids, credentials, networking, and interface names for a new sandbox.
+// Build allocates a sandbox ID, slot, credentials, networking, and interface names.
 func Build(existing []state.Sandbox, cfg *config.Config, name string, vcpus, memoryMiB int) (state.Sandbox, error) {
 	if name == "" {
 		return state.Sandbox{}, fmt.Errorf("allocate: name is required")

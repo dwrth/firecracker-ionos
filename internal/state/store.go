@@ -15,7 +15,7 @@ type Store struct {
 	dir string
 }
 
-// ErrAlreadyExists is returned when Create is called for an existing sandbox id.
+// ErrAlreadyExists is returned when Create is called for an existing sandbox ID.
 var ErrAlreadyExists = errors.New("state: sandbox already exists")
 
 // New returns a Store that reads and writes sandbox records under dir.
@@ -27,7 +27,7 @@ func (s *Store) path(id string) string {
 	return filepath.Join(s.dir, id+".json")
 }
 
-// Exists reports whether a sandbox record exists for id.
+// Exists reports whether a sandbox record exists for the given sandbox ID.
 func (s *Store) Exists(id string) (bool, error) {
 	_, err := os.Stat(s.path(id))
 	if err == nil {
@@ -40,7 +40,7 @@ func (s *Store) Exists(id string) (bool, error) {
 	return false, err
 }
 
-// Save writes sandbox to disk, replacing any existing record with the same id.
+// Save writes sandbox to disk, replacing any existing record with the same sandbox ID.
 func (s *Store) Save(sandbox Sandbox) error {
 	now := time.Now().UTC()
 
@@ -95,7 +95,7 @@ func (s *Store) Save(sandbox Sandbox) error {
 	return os.Rename(tmpName, s.path(sandbox.ID))
 }
 
-// Load reads the sandbox record for id.
+// Load reads the sandbox record for the given sandbox ID.
 func (s *Store) Load(id string) (Sandbox, error) {
 	data, err := os.ReadFile(s.path(id))
 	if err != nil {
@@ -110,7 +110,7 @@ func (s *Store) Load(id string) (Sandbox, error) {
 	return sandbox, nil
 }
 
-// Create writes a new sandbox record. It returns ErrAlreadyExists if id is taken.
+// Create writes a new sandbox record. It returns ErrAlreadyExists if the sandbox ID is taken.
 func (s *Store) Create(sandbox Sandbox) error {
 	exists, err := s.Exists(sandbox.ID)
 	if err != nil {
@@ -122,7 +122,7 @@ func (s *Store) Create(sandbox Sandbox) error {
 	return s.Save(sandbox)
 }
 
-// List returns all sandbox records sorted by id.
+// List returns all sandbox records sorted by sandbox ID.
 func (s *Store) List() ([]Sandbox, error) {
 	entries, err := os.ReadDir(s.dir)
 	if err != nil {
@@ -148,7 +148,7 @@ func (s *Store) List() ([]Sandbox, error) {
 	return sandboxes, nil
 }
 
-// Delete removes the sandbox record for id.
+// Delete removes the sandbox record for the given sandbox ID.
 func (s *Store) Delete(id string) error {
 	return os.Remove(s.path(id))
 }

@@ -1,4 +1,4 @@
-// Package allocate provides utilities generating unique sandbox identifiers.
+// Package allocate assigns sandbox identity, slots, and node-local resources.
 package allocate
 
 import (

@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-// CloneBaseRootfs copies the base rootfs into the sandbox directory for id.
+// CloneBaseRootfs copies the base rootfs into the sandbox directory for the given sandbox ID.
 func (m *Manager) CloneBaseRootfs(id string) error {
 	src := m.BaseRootfs()
 	dst := m.Rootfs(id)

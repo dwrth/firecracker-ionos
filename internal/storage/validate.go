@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// ValidateSandboxStorage reports whether all expected files exist for id.
+// ValidateSandboxStorage reports whether all expected files exist for the given sandbox ID.
 func (m *Manager) ValidateSandboxStorage(id string) error {
 	required := []struct {
 		name string

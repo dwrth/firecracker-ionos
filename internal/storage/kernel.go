@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// InstallKernel copies the configured kernel into the sandbox directory for id.
+// InstallKernel copies the configured kernel into the sandbox directory for the given sandbox ID.
 func (m *Manager) InstallKernel(id string) error {
 	src := m.KernelSource()
 	dst := m.Kernel(id)

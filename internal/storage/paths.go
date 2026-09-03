@@ -27,22 +27,22 @@ func (m *Manager) KernelSource() string {
 	return m.cfg.Storage.Kernel
 }
 
-// SandboxDir returns the directory for sandbox id.
+// SandboxDir returns the directory for the given sandbox ID.
 func (m *Manager) SandboxDir(id string) string {
 	return filepath.Join(m.cfg.Firecracker.SandboxDirectory, id)
 }
 
-// Rootfs returns the rootfs path for sandbox id.
+// Rootfs returns the rootfs path for the given sandbox ID.
 func (m *Manager) Rootfs(id string) string {
 	return filepath.Join(m.SandboxDir(id), "rootfs.ext4")
 }
 
-// Kernel returns the kernel path for sandbox id.
+// Kernel returns the kernel path for the given sandbox ID.
 func (m *Manager) Kernel(id string) string {
 	return filepath.Join(m.SandboxDir(id), "vmlinux")
 }
 
-// Config returns the Firecracker config path for sandbox id.
+// Config returns the Firecracker config path for the given sandbox ID.
 func (m *Manager) Config(id string) string {
 	return filepath.Join(m.SandboxDir(id), "config.json")
 }

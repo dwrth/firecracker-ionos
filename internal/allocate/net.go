@@ -12,12 +12,12 @@ type Net struct {
 	PeerIP string
 }
 
-// GuestNet carves a /30 guest subnet from guestCIDR for id.
+// GuestNet carves a /30 guest subnet from guestCIDR for slot.
 func GuestNet(slot int, guestCIDR string) (Net, error) {
 	return subnetFor(slot, guestCIDR)
 }
 
-// TransitNet carves a /30 transit subnet from transitCIDR for id.
+// TransitNet carves a /30 transit subnet from transitCIDR for slot.
 func TransitNet(slot int, transitCIDR string) (Net, error) {
 	return subnetFor(slot, transitCIDR)
 }

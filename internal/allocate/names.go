@@ -10,7 +10,7 @@ type Names struct {
 	TAP       string
 }
 
-// InterfaceNames returns network namespace and interface names for id.
+// InterfaceNames returns network namespace and interface names for slot.
 func InterfaceNames(slot int) Names {
 	return Names{
 		Namespace: fmt.Sprintf("kn-sandbox-%04d", slot),

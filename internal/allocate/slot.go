@@ -8,10 +8,10 @@ import (
 
 const maxSlot = 255
 
-// NextSlot finds and returns the lowest unused slot number among the provided sandboxes.
+// NextSlot returns the lowest unused slot number among existing sandboxes.
 //
-// Each sandbox's Slot is a node-local integer resource (starting from 1) used for slot allocation.
-// The returned integer is guaranteed not to collide with any Slot currently present in 'existing'.
+// Sandboxes with Slot >= 1 occupy a slot; Slot 0 is treated as unset. Pass existing
+// from persisted state so deleted sandboxes release their slot for reuse.
 func NextSlot(existing []state.Sandbox) (int, error) {
 	used := make(map[int]struct{}, len(existing))
 	for _, sandbox := range existing {
