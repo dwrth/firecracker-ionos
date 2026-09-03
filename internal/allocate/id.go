@@ -1,4 +1,4 @@
-// Package allocate will allocate sandboxes.
+// Package allocate provides utilities for generating and managing unique sandbox identifiers.
 package allocate
 
 import (
@@ -7,13 +7,14 @@ import (
 	"strings"
 
 	"github.com/dwrth/knaller/internal/state"
+	"github.com/oklog/ulid/v2"
 )
 
-// NextID returns the lowest unused vm-NNNN id not present in existing.
-func NextID(existing []state.Sandbox) (string, error) {
+// NextSlotKey returns the lowest unused vm-NNNN id not present in existing.
+func NextSlotKey(existing []state.Sandbox) (string, error) {
 	used := make(map[int]struct{}, len(existing))
 	for _, sandbox := range existing {
-		n, err := parseID(sandbox.ID)
+		n, err := parseSlotKey(sandbox.ID)
 		if err != nil {
 			return "", err
 		}
@@ -22,12 +23,28 @@ func NextID(existing []state.Sandbox) (string, error) {
 
 	for n := 1; ; n++ {
 		if _, ok := used[n]; !ok {
-			return formatID(n), nil
+			return formatSlotKey(n), nil
 		}
 	}
 }
 
-func parseID(id string) (int, error) {
+// NewSandboxID returns a globally unique sandbox ID not present in existing.
+func NewSandboxID(existing []state.Sandbox) (string, error) {
+	used := make(map[string]struct{}, len(existing))
+	for _, sb := range existing {
+		used[sb.ID] = struct{}{}
+	}
+
+	for range 10 {
+		id := ulid.Make().String()
+		if _, ok := used[id]; !ok {
+			return id, nil
+		}
+	}
+	return "", fmt.Errorf("allocate: failed to generate unique sandbox id")
+}
+
+func parseSlotKey(id string) (int, error) {
 	if !strings.HasPrefix(id, "vm-") {
 		return 0, fmt.Errorf("allocate: invalid vm id: %q", id)
 	}
@@ -38,6 +55,6 @@ func parseID(id string) (int, error) {
 	return n, nil
 }
 
-func formatID(n int) string {
+func formatSlotKey(n int) string {
 	return fmt.Sprintf("vm-%04d", n)
 }

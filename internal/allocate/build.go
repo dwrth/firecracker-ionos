@@ -13,7 +13,7 @@ func Build(existing []state.Sandbox, cfg *config.Config, name string, vcpus, mem
 		return state.Sandbox{}, fmt.Errorf("allocate: name is required")
 	}
 
-	id, err := NextID(existing)
+	id, err := NextSlotKey(existing)
 	if err != nil {
 		return state.Sandbox{}, err
 	}

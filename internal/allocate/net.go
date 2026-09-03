@@ -23,7 +23,7 @@ func TransitNet(id, transitCIDR string) (Net, error) {
 }
 
 func subnetFor(id, parentCIDR string) (Net, error) {
-	n, err := parseID(id)
+	n, err := parseSlotKey(id)
 	if err != nil {
 		return Net{}, err
 	}

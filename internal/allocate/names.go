@@ -12,7 +12,7 @@ type Names struct {
 
 // InterfaceNames returns network namespace and interface names for id.
 func InterfaceNames(id string) (Names, error) {
-	n, err := parseID(id)
+	n, err := parseSlotKey(id)
 	if err != nil {
 		return Names{}, err
 	}
